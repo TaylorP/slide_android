@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.slidingmenu.lib.SlidingMenu 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:sliding="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    sliding:viewAbove="@layout/game_frame"
+    sliding:viewBehind="@layout/options_frame"
+    sliding:touchModeAbove="fullscreen"
+    sliding:behindWidth="@dimen/slidingmenu_width"
+    sliding:shadowDrawable="@drawable/slide_shadow"
+    sliding:shadowWidth="@dimen/shadow_width"
+    sliding:fadeEnabled="true"
+    sliding:fadeDegree="0.35"
+    sliding:behindScrollScale = "0"
+    sliding:selectorEnabled="false">
+</com.slidingmenu.lib.SlidingMenu>
