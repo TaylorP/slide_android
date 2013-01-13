@@ -7,9 +7,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+/// The fragment that contain the main game view
 public class GameFragment extends Fragment {
 	
     @Override
+    /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return inflater.inflate(R.layout.game_fragment, container, false);
     }
