@@ -6,8 +6,7 @@
     android:layout_height="fill_parent"
     android:padding="2dp"
     android:gravity = "center"
-    android:clickable="true"
-	android:background="@drawable/list_selector">
+    android:clickable="true">
     
 	<ImageView
 	    android:id="@+id/puzzle_thumb"

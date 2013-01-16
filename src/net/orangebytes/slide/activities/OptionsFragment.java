@@ -3,6 +3,8 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.adapters.OptionsListAdapter;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.utils.TimeUtils;
+import android.annotation.SuppressLint;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -11,8 +13,11 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.FrameLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.SeekBar;
@@ -33,13 +38,27 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	/// TextSwitcher for the grid size text
 	private TextSwitcher mSwitcher;
 
+	/// The last selected position
+	private View mLastSelected = null;
+	
+	/// The puzzle name text
+	private TextView mPuzzleName;
+	
+	/// The best time text
+	private TextView mBestTime;
+	
+	/// The best moves text
+	private TextView mBestMoves;
 
 	@Override
 	/// Creates the view for this fragment
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		View root = inflater.inflate(R.layout.options_fragment, container, false);
 		mOptionsList = (ListView) root.findViewById(R.id.option_list);
-
+		mPuzzleName = (TextView) root.findViewById(R.id.puzzle_name);
+		mBestTime = (TextView)root.findViewById(R.id.puzzle_time);
+		mBestMoves = (TextView)root.findViewById(R.id.puzzle_moves);
+		
 		mValues = new PuzzleInfo[] {
 				new PuzzleInfo("lion", "lion_thumb", 10, 20),
 				new PuzzleInfo("desert", "desert_thumb", 20, 30),
@@ -52,7 +71,56 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("bird", "bird_thumb", 15, 20),
 				new PuzzleInfo("slide", "slide_thumb", 15, 20) };
 
+		
 		mOptionsList.setAdapter(new OptionsListAdapter(this.getActivity(), mValues));
+		mOptionsList.setClickable(true);
+		mOptionsList.setOnItemClickListener(new OnItemClickListener() {
+		       @SuppressLint("NewApi")
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+		    	   
+		    	   if(mLastSelected != null) {
+		    		    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
+		    		    aa.setDuration(10);
+		    		    aa.setFillAfter(true);
+		    		    mLastSelected.startAnimation(aa);
+		    	   }
+		    	   
+		    	   mLastSelected = view;
+	    		   AlphaAnimation aa = new AlphaAnimation(0.3f,0.8f);
+	    		   aa.setDuration(10);
+	    		   aa.setFillAfter(true);
+	    		   view.startAnimation(aa);
+	    		   PuzzleInfo p = ((OptionsListAdapter)mOptionsList.getAdapter()).getInfo(position);
+	    		   if(mPuzzleName != null) { 
+	    			   mPuzzleName.setText(p.getTitle());
+	    			   mBestTime.setText(TimeUtils.intToMinutes(p.getTime()));
+	    			   mBestMoves.setText(p.getMoves()+"");
+	    		   }
+	    		    
+		    	   if (android.os.Build.VERSION.SDK_INT >= 11)
+		    	   {
+		    		   mOptionsList.smoothScrollToPositionFromTop(position, 0);
+
+		    	   }
+		    	   else if (android.os.Build.VERSION.SDK_INT >= 8)
+		    	   {
+		    	       int firstVisible = mOptionsList.getFirstVisiblePosition();
+		    	       int lastVisible = mOptionsList.getLastVisiblePosition();
+		    	       if (position < firstVisible)
+		    	    	   mOptionsList.smoothScrollToPosition(position);
+		    	       else
+		    	    	   mOptionsList.smoothScrollToPosition(position + lastVisible - firstVisible - 2);
+		    	   }
+		    	   else
+		    	   {
+		    		   mOptionsList.setSelectionFromTop(position, 0);
+		    	   }
+		    	   
+		       }
+		   });
+
+                    
 
 		Animation in = AnimationUtils.loadAnimation(this.getActivity(),android.R.anim.fade_in);
 		Animation out = AnimationUtils.loadAnimation(this.getActivity(),R.anim.fast_fade_out);

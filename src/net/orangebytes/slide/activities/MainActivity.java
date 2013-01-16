@@ -15,10 +15,7 @@ public class MainActivity extends FragmentActivity {
 
         setContentView(R.layout.activity_main);
         
-        // In landscape orientation we use two panels, but in portrait we use the SlidingMenu library.
-        // Placeholder views for the SlidingMenu instance need to be filled.
-        int orientation = getResources().getConfiguration().orientation;
-        if(orientation != android.content.res.Configuration.ORIENTATION_LANDSCAPE) {
+        if(this.findViewById(R.id.sliding_menu_frag) != null) {
 			FragmentTransaction t = this.getSupportFragmentManager().beginTransaction();
 			GameFragment gameFrag = new GameFragment();
 			OptionsFragment optionsFrag = new OptionsFragment();

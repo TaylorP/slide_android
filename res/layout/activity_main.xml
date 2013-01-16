@@ -2,6 +2,7 @@
 <com.slidingmenu.lib.SlidingMenu 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:sliding="http://schemas.android.com/apk/res-auto"
+    android:id = "@+id/sliding_menu_frag"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     sliding:viewAbove="@layout/game_frame"

@@ -2,14 +2,15 @@ package net.orangebytes.slide.adapters;
 
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.utils.TimeUtils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AlphaAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -75,6 +76,7 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		if (viewHolder.mTitleText != null) {
 			viewHolder.mTitleText.setText(mValues[position].getTitle());
 			viewHolder.mTitleText.setTypeface(mTypeface);
+			viewHolder.mTitleText.setFocusable(false);
 
 			int puzzleTime = mValues[position].getTime();
 
@@ -91,15 +93,29 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 					viewHolder.mTimeText.setText(puzzleTime / 60 + ":" + puzzleTime % 60);
 				}
 			}
-
+			viewHolder.mTimeText.setText(TimeUtils.intToMinutes(puzzleTime));
+			viewHolder.mTimeText.setFocusable(false);
 			viewHolder.mMoveText.setText(mValues[position].getMoves() + "");
+			viewHolder.mMoveText.setFocusable(false);
 		}
 		
 		Resources res = mContext.getResources();
 		int resID = res.getIdentifier(mValues[position].getThumb(), "drawable", mContext.getPackageName());
 		Drawable drawable = res.getDrawable(resID);
 		viewHolder.mPuzzleThumb.setImageDrawable(drawable);
+		viewHolder.mPuzzleThumb.setFocusable(false);
+		
+		convertView.setFocusable(false);
+		convertView.setClickable(false);
 
+	    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
+	    aa.setDuration(10);
+	    aa.setFillAfter(true);
+	    convertView.startAnimation(aa);
 		return convertView;
+	}
+	
+	public PuzzleInfo getInfo(int index) {
+		return mValues[index];
 	}
 }

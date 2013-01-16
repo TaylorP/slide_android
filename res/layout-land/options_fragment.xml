@@ -51,7 +51,7 @@
 		android:divider="@null"
 		android:dividerHeight="0dp"
 		android:overScrollMode="never"
-		android:fadingEdge="none" >
+		android:fadingEdge="none"
+		android:listSelector="@drawable/list_selector" >
     </ListView>
-    
 </LinearLayout>
