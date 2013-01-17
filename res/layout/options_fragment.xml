@@ -129,6 +129,8 @@
 			android:dividerHeight="0dp"
 			android:overScrollMode="never"
 			android:fadingEdge="none"
+			android:fadingEdgeLength="0dp"
+			android:requiresFadingEdge="none"
 			android:cacheColorHint="#00000000"
 			android:background="#00000000"
 			android:listSelector="@drawable/list_selector" >

@@ -32,6 +32,9 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	/// The options list, containing the available puzzles and some settings
 	private ListView mOptionsList;
 	
+	/// The adapter for the options list
+	private OptionsListAdapter mOptionsAdapter;
+	
 	/// An array of puzzles in the game. TODO: load these from shared preferences
 	private PuzzleInfo[] mValues;
 	
@@ -72,7 +75,9 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("slide", "slide_thumb", 15, 20) };
 
 		
-		mOptionsList.setAdapter(new OptionsListAdapter(this.getActivity(), mValues));
+		mOptionsAdapter = new OptionsListAdapter(this.getActivity(), mValues);
+		
+		mOptionsList.setAdapter(mOptionsAdapter);
 		mOptionsList.setClickable(true);
 		mOptionsList.setOnItemClickListener(new OnItemClickListener() {
 		       @SuppressLint("NewApi")

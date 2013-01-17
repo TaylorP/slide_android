@@ -27,8 +27,17 @@
     <style name="AppTheme" parent="AppBaseTheme">
     	<item name="android:windowActionBar">false</item>
 	    <item name="android:windowNoTitle">true</item>
+	    <item name="android:windowBackground">@null</item>
 	    <item name="android:textColor">#FDFDFD</item>
 	    <item name="android:seekBarStyle">@style/SeekBarAppTheme</item>
     </style>
+  
+	<style name="Widget.AppTheme.ListView" parent="android:Widget.ListView">
+	    <item name="android:overScrollMode">never</item>
+	</style>
+	
+	<style name="Widget.AppTheme.ScrollView" parent="android:Widget.ScrollView">
+	    <item name="android:overScrollMode">never</item>
+	</style>
 
 </resources>

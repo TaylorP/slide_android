@@ -8,5 +8,13 @@
     <style name="AppBaseTheme" parent="android:Theme.Holo.Light.DarkActionBar">
         <!-- API 14 theme customizations can go here. -->
     </style>
+    
+ 	<style name="Widget.AppBaseTheme.ListView" parent="android:Widget.ListView">
+	    <item name="android:overScrollMode">never</item>
+	</style>
+	
+	<style name="Widget.AppBaseTheme.ScrollView" parent="android:Widget.ScrollView">
+	    <item name="android:overScrollMode">never</item>
+	</style>
 
 </resources>
