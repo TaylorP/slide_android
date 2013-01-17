@@ -8,15 +8,8 @@
     android:gravity = "center"
     android:clickable="true">
     
-	<ImageView
-	    android:id="@+id/puzzle_thumb"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:scaleType="fitXY"
-	    android:gravity="left"
-	    android:contentDescription="desc" 
-		android:background="#FFFFFF"
-		android:padding="2dp"
-		android:layout_margin="2dp"/>
+	<include
+   		android:id="@+id/puzzle_thumb"
+   		layout="@layout/puzzle_tile"/>
  			
 </LinearLayout>

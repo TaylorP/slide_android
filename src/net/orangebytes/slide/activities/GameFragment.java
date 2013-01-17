@@ -1,49 +1,71 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
-import net.orangebytes.slide.adapters.GameGridAdapter;
-import net.orangebytes.slide.adapters.OptionsListAdapter;
-import net.orangebytes.slide.model.PuzzleInfo;
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 /// The fragment that contain the main game view
 public class GameFragment extends Fragment {
 	
-	/// The grid view that contains the game tiles
-	GridView mGameGrid;
 	
-	/// The adapter for the game grid
-	GameGridAdapter mGameAdapter;
-	
-    @Override
+    @SuppressLint("NewApi")
+	@Override
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
     	
-    	PuzzleInfo[] mValues = new PuzzleInfo[] {
-				new PuzzleInfo("lion", "lion_thumb", 10, 20),
-				new PuzzleInfo("desert", "desert_thumb", 20, 30),
-				new PuzzleInfo("fruit", "fruit_thumb", 122, 30),
-				new PuzzleInfo("steak", "steak_thumb", 45, 30),
-				new PuzzleInfo("flower", "flower_thumb", 45, 30),
-				new PuzzleInfo("plant", "plant_thumb", 45, 32),
-				new PuzzleInfo("orange", "orange_thumb", 15, 20),
-				new PuzzleInfo("snow", "snow_thumb", 15, 20),
-				new PuzzleInfo("bird", "bird_thumb", 15, 20),
-				new PuzzleInfo("slide", "slide_thumb", 15, 20) };
+    	Display display = getActivity().getWindowManager().getDefaultDisplay();
+    	Point size = new Point();
+    	display.getSize(size);
+    	int width = size.x - 60;
+    	int height = size.y - 60;
+    	
+    	int padding = 6;
+    	
+    	int x = 4;
+    	int y = 4;
+    	int tileSizeTryX = width / x;
+    	int tileSizeTryY = height / y;
+    	
+    	int tileSize = Math.min(tileSizeTryX, tileSizeTryY)-padding;
+    	
+    	
+    	Bitmap originalBitmap=BitmapFactory.decodeResource(getResources(), R.drawable.lion);
+    	int bwidth = originalBitmap.getWidth();
+    	int bheight = originalBitmap.getHeight();
+    	
+    	RelativeLayout parent = (RelativeLayout) root.findViewById(R.id.game_grid);
+    	parent.setLayoutParams(new RelativeLayout.LayoutParams((tileSize+padding)*x, (tileSize+padding)*y));
+    	
+    	for(int i = 0; i < x; i++)
+    	{
+    		for(int j = 0; j< y; j++)
+    		{
+    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, i*(bwidth/x), j*(bwidth/x), (bwidth/x), (bwidth/x));
+    	    	
+    	    	getActivity();
+    			LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+    	    	ImageView v = (ImageView)vi.inflate(R.layout.puzzle_tile, null);
+    	    	v.setImageBitmap(croppedBitmap);
+    	    	v.setX((tileSize+padding)*(i));
+    	    	v.setY((tileSize+padding)*(j));
+    	    
+    	    	parent.addView(v, i, new ViewGroup.LayoutParams(tileSize, tileSize));
+    		}
+    	}
 
-		
-    	//mGameAdapter = new GameGridAdapter(this.getActivity(), mValues);
-    	
-    	mGameGrid = (GridView) root.findViewById(R.id.game_grid);
-    	//mGameGrid.setAdapter(mGameAdapter);
-    	
         return root;
     }
 }
