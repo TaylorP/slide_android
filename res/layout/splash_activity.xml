@@ -7,7 +7,7 @@
 
 	<LinearLayout
 	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content"
+	    android:layout_height="fill_parent"
 	    android:layout_centerInParent="true"
 	    android:gravity="center"
 	    android:orientation="horizontal"
@@ -15,10 +15,9 @@
 
 	    <ImageView
 	        android:layout_width="0dp"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center"
+	        android:layout_height="match_parent"
 	        android:layout_weight="0.65"
-	        android:paddingBottom="50dp"
+	        android:paddingBottom="60dp"
 	        android:src="@drawable/logo_splash" />
 
     </LinearLayout>
@@ -37,8 +36,8 @@
 	        android:layout_centerInParent="true"
 	        android:layout_gravity="center"
 	        android:src="@drawable/orangebytes_splash" 
-	        android:paddingBottom = "5dp"/>
+	        android:layout_marginBottom = "10dp"
+	        android:layout_marginTop = "10dp"/>
 
     </RelativeLayout>
-    
 </RelativeLayout>
