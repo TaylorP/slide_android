@@ -39,10 +39,10 @@ public class GameFragment extends Fragment {
 				new PuzzleInfo("slide", "slide_thumb", 15, 20) };
 
 		
-    	mGameAdapter = new GameGridAdapter(this.getActivity(), mValues);
+    	//mGameAdapter = new GameGridAdapter(this.getActivity(), mValues);
     	
     	mGameGrid = (GridView) root.findViewById(R.id.game_grid);
-    	mGameGrid.setAdapter(mGameAdapter);
+    	//mGameGrid.setAdapter(mGameAdapter);
     	
         return root;
     }
