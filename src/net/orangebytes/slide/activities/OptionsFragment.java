@@ -5,6 +5,8 @@ import net.orangebytes.slide.adapters.OptionsListAdapter;
 import net.orangebytes.slide.model.PuzzleInfo;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
@@ -29,6 +31,9 @@ import android.widget.ViewSwitcher;
 /// The options fragment, for the options menu of the game
 public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactory {
 
+	/// The activity this fragment is in, used as it's context as well
+	private Activity mActivity;
+	
 	/// The options list, containing the available puzzles and some settings
 	private ListView mOptionsList;
 	
@@ -62,6 +67,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mBestTime = (TextView)root.findViewById(R.id.puzzle_time);
 		mBestMoves = (TextView)root.findViewById(R.id.puzzle_moves);
 		
+		mActivity = getActivity();
+		
 		mValues = new PuzzleInfo[] {
 				new PuzzleInfo("lion", "lion_thumb", 10, 20),
 				new PuzzleInfo("desert", "desert_thumb", 20, 30),
@@ -75,7 +82,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("slide", "slide_thumb", 15, 20) };
 
 		
-		mOptionsAdapter = new OptionsListAdapter(this.getActivity(), mValues);
+		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
 		
 		mOptionsList.setAdapter(mOptionsAdapter);
 		mOptionsList.setClickable(true);
@@ -122,19 +129,22 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		    		   mOptionsList.setSelectionFromTop(position, 0);
 		    	   }
 		    	   
+			   		Resources res = mActivity.getResources();
+					int resID = res.getIdentifier(mValues[position].getTitle(), "drawable", mActivity.getPackageName());
+					((MainActivity)mActivity).setPuzzle(resID, -1, -1);
 		       }
 		   });
 
                     
 
-		Animation in = AnimationUtils.loadAnimation(this.getActivity(),android.R.anim.fade_in);
-		Animation out = AnimationUtils.loadAnimation(this.getActivity(),R.anim.fast_fade_out);
+		Animation in = AnimationUtils.loadAnimation(mActivity,android.R.anim.fade_in);
+		Animation out = AnimationUtils.loadAnimation(mActivity,R.anim.fast_fade_out);
 
 		mSwitcher = (TextSwitcher) root.findViewById(R.id.grid_size);
 		mSwitcher.setFactory(this);
 		mSwitcher.setInAnimation(in);
 		mSwitcher.setOutAnimation(out);
-		mSwitcher.setText(getActivity().getString(R.string.grid_size));
+		mSwitcher.setText(mActivity.getString(R.string.grid_size));
 
 		final SeekBar sk = (SeekBar) root.findViewById(R.id.game_size_bar);
 		sk.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
@@ -143,13 +153,12 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 			public void onStopTrackingTouch(SeekBar seekBar) {
 
 				Animation in = AnimationUtils.loadAnimation(
-						OptionsFragment.this.getActivity(), R.anim.slow_fade_in);
+						mActivity, R.anim.slow_fade_in);
 				Animation out = AnimationUtils.loadAnimation(
-						OptionsFragment.this.getActivity(),
-						R.anim.slow_fade_out);
+						mActivity, R.anim.slow_fade_out);
 				mSwitcher.setInAnimation(in);
 				mSwitcher.setOutAnimation(out);
-				mSwitcher.setText(getActivity().getString(R.string.grid_size));
+				mSwitcher.setText(mActivity.getString(R.string.grid_size));
 				
 				int xSize = 3;
 				int ySize = 3;
@@ -175,17 +184,17 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 					ySize = 5;
 					break;
 				}
-				((MainActivity)getActivity()).setPuzzle(R.drawable.lion, xSize, ySize);
+				((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);
 			}
 
 			@Override
 			public void onStartTrackingTouch(SeekBar seekBar) {
 
 				Animation in = AnimationUtils.loadAnimation(
-						OptionsFragment.this.getActivity(),
+						mActivity,
 						android.R.anim.fade_in);
 				Animation out = AnimationUtils.loadAnimation(
-						OptionsFragment.this.getActivity(),
+						mActivity,
 						R.anim.fast_fade_out);
 				mSwitcher.setInAnimation(in);
 				mSwitcher.setOutAnimation(out);
@@ -221,14 +230,14 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	@Override
 	/// View factory method, produces a text view for the TextSwitcher
 	public View makeView() {
-		TextView t = new TextView(getActivity());
+		TextView t = new TextView(mActivity);
 		t.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 		t.setTextSize(18);
 		LayoutParams p = new LayoutParams(LayoutParams.MATCH_PARENT,
 				LayoutParams.MATCH_PARENT);
 		t.setLayoutParams(p);
 		t.setTextColor(Color.parseColor("#BBBBBB"));
-		t.setTypeface(Typeface.createFromAsset(getActivity().getAssets(),
+		t.setTypeface(Typeface.createFromAsset(mActivity.getAssets(),
 				"Roboto-Light.ttf"));
 		return t;
 	}

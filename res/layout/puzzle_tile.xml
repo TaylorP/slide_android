@@ -8,4 +8,4 @@
 	android:background="#FFFFFF"
 	android:padding="2dp"
 	android:layout_margin="6dp"
-	android:alpha = "0.75"/>
+	android:alpha = "1.0"/>

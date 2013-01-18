@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,6 +18,15 @@ public class GameFragment extends Fragment {
 	
 	/// The layout that will hold the game tiles
 	RelativeLayout mGameGrid;
+	
+	/// The current image resource
+	int mImage;
+	
+	/// The current xSize
+	int mXSize;
+	
+	/// The current ySize
+	int mYSize;
 	
 	@Override
     /// Creates the view for this fragment
@@ -33,13 +40,29 @@ public class GameFragment extends Fragment {
         return root;
     }
     
+	
+	/// Sets the puzzle, given an image or size
     public void setPuzzle(int imageResource, int xSize, int ySize) {
+    	
+    	if(imageResource == -1) {
+    		imageResource = mImage;
+    	} else {
+    		mImage = imageResource;
+    	}
+    	
+    	if(xSize == -1 || ySize == -1) {
+    		xSize = mXSize;
+    		ySize = mYSize;
+    	} else {
+    		mXSize = xSize;
+    		mYSize = ySize;
+    	}
     	
     	mGameGrid.removeAllViews();
     	
     	int effectiveWidth 	= DisplayUtils.getDisplayWidth(getActivity()) - 60;
     	int effectiveHeight = DisplayUtils.getDisplayHeight(getActivity()) - 60;
-    	Log.d("Taylor", effectiveWidth + "," + effectiveHeight);
+
     	int cellPadding = 6;
     	int cellSize = Math.min((effectiveWidth / xSize), (effectiveHeight / ySize)) - cellPadding;
     	
@@ -48,19 +71,13 @@ public class GameFragment extends Fragment {
     	int imageWidth = originalBitmap.getWidth();
     	int imageScale = imageWidth/xSize;
     	
-    	mGameGrid.setLayoutParams(
-    			new RelativeLayout.LayoutParams((cellSize+cellPadding)*xSize, (cellSize+cellPadding)*ySize)
-    			);
+    	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams((cellSize+cellPadding)*xSize, (cellSize+cellPadding)*ySize));
     	
     	for(int i = 0; i < xSize; i++)
     	{
     		for(int j = 0; j< ySize; j++)
     		{
-    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, 
-								    	    			i*imageScale, 
-								    	    			j*imageScale, 
-								    	    			imageScale, 
-								    	    			imageScale);
+    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, i*imageScale, j*imageScale, imageScale, imageScale);
     	    	
     			LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	    	ImageView v = (ImageView)vi.inflate(R.layout.puzzle_tile, null);
@@ -72,7 +89,6 @@ public class GameFragment extends Fragment {
     	    	v.setImageBitmap(croppedBitmap);
     	    	v.setLayoutParams(params);
     	    
-    	    	
     	    	mGameGrid.addView(v);
     		}
     	}

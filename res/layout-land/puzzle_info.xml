@@ -10,7 +10,8 @@
     
 	<include
    		android:id="@+id/puzzle_thumb"
-   		layout="@layout/puzzle_tile"/>
+   		layout="@layout/puzzle_tile"
+   		android:alpha = "0.1"/>
  				
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="wrap_content"
