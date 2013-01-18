@@ -1,14 +1,14 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
-import android.annotation.SuppressLint;
+import net.orangebytes.slide.utils.DisplayUtils;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.view.Display;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,54 +18,63 @@ import android.widget.RelativeLayout;
 /// The fragment that contain the main game view
 public class GameFragment extends Fragment {
 	
+	/// The layout that will hold the game tiles
+	RelativeLayout mGameGrid;
 	
-    @SuppressLint("NewApi")
 	@Override
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
+    	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
     	
-    	Display display = getActivity().getWindowManager().getDefaultDisplay();
-    	Point size = new Point();
-    	display.getSize(size);
-    	int width = size.x - 60;
-    	int height = size.y - 60;
+    	setPuzzle(R.drawable.lion, 3, 4);
     	
-    	int padding = 6;
+        return root;
+    }
+    
+    public void setPuzzle(int imageResource, int xSize, int ySize) {
     	
-    	int x = 4;
-    	int y = 4;
-    	int tileSizeTryX = width / x;
-    	int tileSizeTryY = height / y;
+    	mGameGrid.removeAllViews();
     	
-    	int tileSize = Math.min(tileSizeTryX, tileSizeTryY)-padding;
+    	int effectiveWidth 	= DisplayUtils.getDisplayWidth(getActivity()) - 60;
+    	int effectiveHeight = DisplayUtils.getDisplayHeight(getActivity()) - 60;
+    	Log.d("Taylor", effectiveWidth + "," + effectiveHeight);
+    	int cellPadding = 6;
+    	int cellSize = Math.min((effectiveWidth / xSize), (effectiveHeight / ySize)) - cellPadding;
     	
+    	Bitmap originalBitmap=BitmapFactory.decodeResource(getResources(), imageResource);
     	
-    	Bitmap originalBitmap=BitmapFactory.decodeResource(getResources(), R.drawable.lion);
-    	int bwidth = originalBitmap.getWidth();
-    	int bheight = originalBitmap.getHeight();
+    	int imageWidth = originalBitmap.getWidth();
+    	int imageScale = imageWidth/xSize;
     	
-    	RelativeLayout parent = (RelativeLayout) root.findViewById(R.id.game_grid);
-    	parent.setLayoutParams(new RelativeLayout.LayoutParams((tileSize+padding)*x, (tileSize+padding)*y));
+    	mGameGrid.setLayoutParams(
+    			new RelativeLayout.LayoutParams((cellSize+cellPadding)*xSize, (cellSize+cellPadding)*ySize)
+    			);
     	
-    	for(int i = 0; i < x; i++)
+    	for(int i = 0; i < xSize; i++)
     	{
-    		for(int j = 0; j< y; j++)
+    		for(int j = 0; j< ySize; j++)
     		{
-    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, i*(bwidth/x), j*(bwidth/x), (bwidth/x), (bwidth/x));
+    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, 
+								    	    			i*imageScale, 
+								    	    			j*imageScale, 
+								    	    			imageScale, 
+								    	    			imageScale);
     	    	
-    	    	getActivity();
     			LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	    	ImageView v = (ImageView)vi.inflate(R.layout.puzzle_tile, null);
+    	    	
+    	    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(cellSize, cellSize);
+    	    	params.leftMargin = (cellSize+cellPadding)*(i);
+    	    	params.topMargin = (cellSize+cellPadding)*(j);
+    	    	
     	    	v.setImageBitmap(croppedBitmap);
-    	    	v.setX((tileSize+padding)*(i));
-    	    	v.setY((tileSize+padding)*(j));
+    	    	v.setLayoutParams(params);
     	    
-    	    	parent.addView(v, i, new ViewGroup.LayoutParams(tileSize, tileSize));
+    	    	
+    	    	mGameGrid.addView(v);
     		}
     	}
-
-        return root;
     }
 }

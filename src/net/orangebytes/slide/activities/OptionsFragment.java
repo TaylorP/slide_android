@@ -150,6 +150,32 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				mSwitcher.setInAnimation(in);
 				mSwitcher.setOutAnimation(out);
 				mSwitcher.setText(getActivity().getString(R.string.grid_size));
+				
+				int xSize = 3;
+				int ySize = 3;
+				switch (seekBar.getProgress()) {
+				case 0:
+					xSize = 3;
+					ySize = 3;
+					break;
+				case 1:
+					xSize = 3;
+					ySize = 4;
+					break;
+				case 2:
+					xSize = 4;
+					ySize = 4;
+					break;
+				case 3:
+					xSize = 4;
+					ySize = 5;
+					break;
+				case 4:
+					xSize = 5;
+					ySize = 5;
+					break;
+				}
+				((MainActivity)getActivity()).setPuzzle(R.drawable.lion, xSize, ySize);
 			}
 
 			@Override
