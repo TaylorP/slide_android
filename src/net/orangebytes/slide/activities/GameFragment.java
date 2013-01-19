@@ -2,7 +2,9 @@ package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.utils.DisplayUtils;
+import net.orangebytes.slide.utils.FontUtils;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -12,12 +14,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 /// The fragment that contain the main game view
 public class GameFragment extends Fragment {
 	
 	/// The layout that will hold the game tiles
 	RelativeLayout mGameGrid;
+	
+	/// The text for displaying the time
+	TextView mTimeText;
 	
 	/// The current image resource
 	int mImage;
@@ -33,9 +39,16 @@ public class GameFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
-    	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
     	
-    	setPuzzle(R.drawable.leaf, 3, 4);
+    	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
+    	mTimeText = (TextView) root.findViewById(R.id.time_text);
+    	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
+    	
+		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			setPuzzle(R.drawable.leaf, 4, 3);
+		} else {
+			setPuzzle(R.drawable.leaf, 3, 4);
+		}
     	
         return root;
     }
@@ -68,8 +81,12 @@ public class GameFragment extends Fragment {
     	
     	Bitmap originalBitmap=BitmapFactory.decodeResource(getResources(), imageResource);
     	
-    	int imageWidth = originalBitmap.getWidth();
-    	int imageScale = imageWidth/xSize;
+		int imageWidth = originalBitmap.getWidth();
+		int imageScale = imageWidth/xSize;
+    	if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+    		imageWidth = originalBitmap.getHeight();
+    		imageScale = imageWidth/ySize;
+    	}
     	
     	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams((cellSize+cellPadding)*xSize, (cellSize+cellPadding)*ySize));
     	

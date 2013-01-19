@@ -1,19 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
-    android:gravity="center">
+    android:gravity="center"
+    android:paddingBottom = "30dp">
+	      	
+	<TextView
+	    android:id="@+id/time_text"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_gravity="center_horizontal"
+	    android:gravity="center"
+	    android:text="0:00"
+	    android:textColor="#EEEEEE"
+	    android:textSize="35dp" />
+		
 	<RelativeLayout
 	    xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_gravity="center"
+	    android:layout_gravity="bottom"
 	    android:gravity="center" >
+	    
 	    <RelativeLayout
 	        android:id = "@+id/game_grid"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content">
 		</RelativeLayout>
 	</RelativeLayout>
-</ScrollView>
+</FrameLayout>

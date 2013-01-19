@@ -6,6 +6,7 @@ import net.orangebytes.slide.model.PuzzleInfo;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -90,6 +91,10 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 
 		    	   
+			   		Resources res = mActivity.getResources();
+					int resID = res.getIdentifier(mValues[position].getTitle(), "drawable", mActivity.getPackageName());
+					((MainActivity)mActivity).setPuzzle(resID, -1, -1);
+					
 		    	   if(mLastSelected != null) {
 		    		    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
 		    		    aa.setDuration(10);
@@ -127,10 +132,6 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		    	   {
 		    		   mOptionsList.setSelectionFromTop(position, 0);
 		    	   }
-		    	   
-			   		Resources res = mActivity.getResources();
-					int resID = res.getIdentifier(mValues[position].getTitle(), "drawable", mActivity.getPackageName());
-					((MainActivity)mActivity).setPuzzle(resID, -1, -1);
 		       }
 		   });
 
@@ -183,7 +184,11 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 					ySize = 5;
 					break;
 				}
-				((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);
+				if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					((MainActivity)mActivity).setPuzzle(-1, ySize, xSize);
+				} else {
+					((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);
+				}					
 			}
 
 			@Override

@@ -2,10 +2,10 @@ package net.orangebytes.slide.adapters;
 
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.content.Context;
 import android.content.res.Resources;
-import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,9 +23,6 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 	
 	/// The array of values the adapter should pull from
 	private final PuzzleInfo[] mValues;
-	
-	/// A Typeface used for the image titles, loaded with Roboto-Light at runtime.
-	private final Typeface mTypeface;
 
 	
 	/// Static class to implement the ViewHolder pattern, for speeding up list processing
@@ -48,9 +45,9 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 	/// Constructor taking a context and data array as parameters
 	public OptionsListAdapter(Context context, PuzzleInfo[] values) {
 		super(context, R.layout.puzzle_info, values);
+		
 		mContext = context;
 		mValues = values;
-		mTypeface = Typeface.createFromAsset(mContext.getAssets(), "Roboto-Light.ttf");
 	}
 
 	@Override
@@ -75,26 +72,12 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 
 		if (viewHolder.mTitleText != null) {
 			viewHolder.mTitleText.setText(mValues[position].getTitle());
-			viewHolder.mTitleText.setTypeface(mTypeface);
+			viewHolder.mTitleText.setTypeface(FontUtils.getRobotoLight(mContext));
 			viewHolder.mTitleText.setFocusable(false);
 
-			int puzzleTime = mValues[position].getTime();
-
-			if (puzzleTime < 10) {
-				viewHolder.mTimeText.setText("0:0" + puzzleTime);
-			}
-			else if (puzzleTime < 60) {
-				viewHolder.mTimeText.setText("0:" + puzzleTime);
-			}
-			else {
-				if (puzzleTime % 60 < 10) {
-					viewHolder.mTimeText.setText(puzzleTime / 60 + ":0" + puzzleTime % 60);
-				} else {
-					viewHolder.mTimeText.setText(puzzleTime / 60 + ":" + puzzleTime % 60);
-				}
-			}
-			viewHolder.mTimeText.setText(TimeUtils.intToMinutes(puzzleTime));
+			viewHolder.mTimeText.setText(TimeUtils.intToMinutes(mValues[position].getTime()));
 			viewHolder.mTimeText.setFocusable(false);
+			
 			viewHolder.mMoveText.setText(mValues[position].getMoves() + "");
 			viewHolder.mMoveText.setFocusable(false);
 		}
