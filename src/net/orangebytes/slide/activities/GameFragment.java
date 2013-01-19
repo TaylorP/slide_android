@@ -35,7 +35,7 @@ public class GameFragment extends Fragment {
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
     	
-    	setPuzzle(R.drawable.lion, 3, 4);
+    	setPuzzle(R.drawable.leaf, 3, 4);
     	
         return root;
     }
