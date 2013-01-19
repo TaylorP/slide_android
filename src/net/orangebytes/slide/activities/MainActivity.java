@@ -44,4 +44,8 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void setPuzzle(int resource, int xSize, int ySize) {
 		mGameFragment.setPuzzle(resource, xSize, ySize);
 	}
+	
+	public void toggleOptions() {
+		getSlidingMenu().toggle(true);
+	}
 }

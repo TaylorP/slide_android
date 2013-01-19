@@ -1,19 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background_gradient"
     android:gravity="center">
+    
+       <LinearLayout
+           android:layout_width="fill_parent"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal"
+           android:gravity="center" >
+
+           <ImageView
+               xmlns:android="http://schemas.android.com/apk/res/android"
+               android:id="@+id/options_button"
+               android:layout_width="40dp"
+               android:layout_height="40dp"
+               android:alpha="1.0"
+               android:gravity="left"
+               android:scaleType="fitXY"
+               android:src="@drawable/gear" />
+
+           <TextView
+               android:id="@+id/time_text"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:layout_weight="0.9"
+               android:gravity="center"
+               android:text="0:00"
+               android:textColor="#EEEEEE"
+               android:textSize="35dp" />
+       </LinearLayout>
+       
 	<RelativeLayout
 	    xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:layout_gravity="center"
-	    android:gravity="center" >
+	    android:layout_gravity="center_vertical|right"
+	    android:gravity="center|right" >
 	    <RelativeLayout
 	        android:id = "@+id/game_grid"
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content">
 		</RelativeLayout>
 	</RelativeLayout>
-</ScrollView>
+</FrameLayout>

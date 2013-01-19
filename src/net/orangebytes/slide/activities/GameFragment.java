@@ -3,6 +3,7 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.FontUtils;
+import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -19,11 +21,14 @@ import android.widget.TextView;
 /// The fragment that contain the main game view
 public class GameFragment extends Fragment {
 	
+	/// The activity this fragment is in, used as it's context as well
+	private Activity mActivity;
+	
 	/// The layout that will hold the game tiles
-	RelativeLayout mGameGrid;
+	private RelativeLayout mGameGrid;
 	
 	/// The text for displaying the time
-	TextView mTimeText;
+	private TextView mTimeText;
 	
 	/// The current image resource
 	int mImage;
@@ -43,6 +48,18 @@ public class GameFragment extends Fragment {
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
+    	
+    	mActivity = getActivity();
+    	
+    	ImageView v = (ImageView)root.findViewById(R.id.options_button);
+    	v.setClickable(true);
+    	v.setOnClickListener(new OnClickListener() {
+    		   @Override
+    		   public void onClick(View v) {
+    		      ((MainActivity)mActivity).toggleOptions();
+    		   }
+    		  });
+    	
     	
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 			setPuzzle(R.drawable.leaf, 4, 3);
