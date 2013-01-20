@@ -20,9 +20,13 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.ViewFlipper;
 
 /// The fragment that contain the main game view
 public class GameFragment extends Fragment implements OnTouchListener{
@@ -36,6 +40,12 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The text for displaying the time
 	private TextView mTimeText;
 	
+	/// The view flipper, for toggling the puzzle and solution
+	private ViewFlipper mFlipper;
+	
+	/// The preview image
+	private ImageView mPreview;
+	
 	/// The views
 	private View mViews[];
 	
@@ -46,13 +56,22 @@ public class GameFragment extends Fragment implements OnTouchListener{
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
+		mActivity = getActivity();
+		
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
     	
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
+    	mFlipper = (ViewFlipper) root.findViewById(R.id.game_flipper);
+        mPreview = (ImageView) root.findViewById(R.id.preview_image);
+        
+    	Animation in  = AnimationUtils.loadAnimation(mActivity, R.anim.grow_from_middle);
+    	Animation out = AnimationUtils.loadAnimation(mActivity, R.anim.shrink_to_middle);
+    	mFlipper.setInAnimation(in);
+    	mFlipper.setOutAnimation(out);
+    	
+    	  
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
-    	
-    	mActivity = getActivity();
     	
     	ImageView v = (ImageView)root.findViewById(R.id.options_button);
     	v.setClickable(true);
@@ -80,6 +99,11 @@ public class GameFragment extends Fragment implements OnTouchListener{
 		GamePreferences.get(mActivity).storeGameState(mGameState);
 	}
     
+	
+	/// Toggles the view
+	public void toggleView() {
+		mFlipper.showNext();
+	}
 	
 	/// Sets the puzzle, given an image or size
     public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
@@ -109,6 +133,12 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	
     	int gridWidth = (tileSize + tilePadding)* mGameState.getX();
     	int gridHeight = (tileSize + tilePadding)* mGameState.getY();
+    	
+    	
+    	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mGameState.getX(),tileScale*mGameState.getY()));
+    	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(gridWidth, gridHeight);
+    	mPreview.setLayoutParams(params);
+    	
     	
     	mGameGrid.removeAllViews();
     	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams(gridWidth, gridHeight));
