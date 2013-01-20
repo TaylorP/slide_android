@@ -1,8 +1,11 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
-import net.orangebytes.slide.utils.DisplayUtils;
+import net.orangebytes.slide.model.PuzzleTile;
+import net.orangebytes.slide.preferences.GamePreferences;
+import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.FontUtils;
+import net.orangebytes.slide.utils.TileUtils;
 import android.app.Activity;
 import android.content.Context;
 import android.content.res.Configuration;
@@ -10,16 +13,19 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 /// The fragment that contain the main game view
-public class GameFragment extends Fragment {
+public class GameFragment extends Fragment implements OnTouchListener{
 	
 	/// The activity this fragment is in, used as it's context as well
 	private Activity mActivity;
@@ -30,14 +36,11 @@ public class GameFragment extends Fragment {
 	/// The text for displaying the time
 	private TextView mTimeText;
 	
-	/// The current image resource
-	int mImage;
+	/// The views
+	private View mViews[];
 	
-	/// The current xSize
-	int mXSize;
-	
-	/// The current ySize
-	int mYSize;
+	/// The current game state
+	private GameState mGameState;
 	
 	@Override
     /// Creates the view for this fragment
@@ -61,70 +64,120 @@ public class GameFragment extends Fragment {
     		  });
     	
     	
+    	mGameState = GamePreferences.get(mActivity).loadGameState();
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setPuzzle(R.drawable.leaf, 4, 3);
+			setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
 		} else {
-			setPuzzle(R.drawable.leaf, 3, 4);
+			setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
 		}
     	
         return root;
     }
+	
+	@Override
+	public void onPause () {
+		super.onPause();
+		GamePreferences.get(mActivity).storeGameState(mGameState);
+	}
     
 	
 	/// Sets the puzzle, given an image or size
-    public void setPuzzle(int imageResource, int xSize, int ySize) {
+    public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
     	
-    	if(imageResource == -1) {
-    		imageResource = mImage;
+    	if(pImage == -1) {
+    		pImage = mGameState.getImage();
     	} else {
-    		mImage = imageResource;
+    		mGameState.setImage(pImage);
     	}
     	
-    	if(xSize == -1 || ySize == -1) {
-    		xSize = mXSize;
-    		ySize = mYSize;
+    	if(pSizeX == -1 || pSizeY == -1) {
+    		pSizeX = mGameState.getX();
+    		pSizeY = mGameState.getY();
     	} else {
-    		mXSize = xSize;
-    		mYSize = ySize;
+    		mGameState.setX(pSizeX);
+    		mGameState.setY(pSizeY);
     	}
+    	
+
+    	Bitmap image = BitmapFactory.decodeResource(getResources(), pImage);
+    	
+    	int tileSize = TileUtils.getTileSize(mActivity, mGameState); // This is the UI view size
+    	int tilePadding = TileUtils.getTilePadding();
+    	int tileScale = TileUtils.getTileScale(image, mGameState, getResources()); // This is the actual image size
+    	Log.d("TileScale", tileScale + "");
+    	int tileCount = mGameState.getX() * mGameState.getY();
+    	
+    	int gridWidth = (tileSize + tilePadding)* mGameState.getX();
+    	int gridHeight = (tileSize + tilePadding)* mGameState.getY();
     	
     	mGameGrid.removeAllViews();
+    	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams(gridWidth, gridHeight));
+    	mViews = new View[tileCount];
     	
-    	int effectiveWidth 	= DisplayUtils.getDisplayWidth(getActivity()) - 60;
-    	int effectiveHeight = DisplayUtils.getDisplayHeight(getActivity()) - 60;
-
-    	int cellPadding = 6;
-    	int cellSize = Math.min((effectiveWidth / xSize), (effectiveHeight / ySize)) - cellPadding;
+    	LayoutInflater viewInflator = (LayoutInflater)mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
-    	Bitmap originalBitmap=BitmapFactory.decodeResource(getResources(), imageResource);
-    	
-		int imageWidth = originalBitmap.getWidth();
-		int imageScale = imageWidth/xSize;
-    	if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    		imageWidth = originalBitmap.getHeight();
-    		imageScale = imageWidth/ySize;
-    	}
-    	
-    	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams((cellSize+cellPadding)*xSize, (cellSize+cellPadding)*ySize));
-    	
-    	for(int i = 0; i < xSize; i++)
+    	int count = 0;
+    	for(int i = 0; i < mGameState.getX(); i++)
     	{
-    		for(int j = 0; j< ySize; j++)
+    		for(int j = 0; j< mGameState.getY(); j++)
     		{
-    	    	Bitmap croppedBitmap=Bitmap.createBitmap(originalBitmap, i*imageScale, j*imageScale, imageScale, imageScale);
+    	    	int xPos = (tileSize + tilePadding) * i;
+    	    	int yPos = (tileSize + tilePadding) * j;
     	    	
-    			LayoutInflater vi = (LayoutInflater) getActivity().getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-    	    	ImageView v = (ImageView)vi.inflate(R.layout.puzzle_tile, null);
+
+    	    	Bitmap tileImage = Bitmap.createBitmap(image, i*tileScale, j*tileScale, tileScale, tileScale);
     	    	
-    	    	RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(cellSize, cellSize);
-    	    	params.leftMargin = (cellSize+cellPadding)*(i);
-    	    	params.topMargin = (cellSize+cellPadding)*(j);
+    	    	ImageView tile = (ImageView)viewInflator.inflate(R.layout.puzzle_tile, null);
+    	    	tile.setLayoutParams(TileUtils.getTileLayout(tileSize, xPos, yPos));
+    	    	tile.setOnTouchListener(this);
     	    	
-    	    	v.setImageBitmap(croppedBitmap);
-    	    	v.setLayoutParams(params);
-    	    
-    	    	mGameGrid.addView(v);
+    	    	mViews[count] = tile;
+    	    	
+    	    	if(count == tileCount-1) {
+    	    		tile.setTag(new PuzzleTile(tile,true,count));
+    	    		tile.setBackgroundColor(getResources().getColor(R.color.clear));
+    	    	} else {
+    	    		tile.setTag(new PuzzleTile(tile,count));
+    	    		tile.setImageBitmap(tileImage);
+    	    	}
+
+    	    	mGameGrid.addView(tile);
+    	    	count++;
     		}
     	}
+    	
+    	int index = 0;
+    	for(int i = 0; i < mGameState.getX(); i++){
+    		for(int j = 0; j< mGameState.getY(); j++){
+                if(j > 0){
+                	((PuzzleTile)mViews[index].getTag()).mNeighbours[1] = ((PuzzleTile)mViews[index-1].getTag());
+                }
+                if(j< mGameState.getY()-1){
+                	((PuzzleTile)mViews[index].getTag()).mNeighbours[3] = ((PuzzleTile)mViews[index+1].getTag());
+                }
+                if(i > 0){
+                	((PuzzleTile)mViews[index].getTag()).mNeighbours[0] = ((PuzzleTile)mViews[index-mGameState.getY()].getTag());
+                }
+                if(i< mGameState.getX()-1){
+                	((PuzzleTile)mViews[index].getTag()).mNeighbours[2] = ((PuzzleTile)mViews[index+mGameState.getY()].getTag());
+                }
+                index++;
+    		}
+    	}
+    	
+    }
+
+	@Override
+    public boolean onTouch(View v, MotionEvent e) {
+    	if(e.getAction() == MotionEvent.ACTION_UP) {
+    		for(int i = 0; i<4; i++) {
+    			PuzzleTile p = (PuzzleTile)v.getTag();
+    			if (p.canSlide(i)){
+    				p.swap(i);
+    				break;
+    			}
+    		}
+    	}
+        return true;
     }
 }

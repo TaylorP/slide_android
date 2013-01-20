@@ -33,7 +33,7 @@ public class MainActivity extends SlidingFragmentActivity {
 		t2.commit();
 		
 		SlidingMenu sm = getSlidingMenu();
-		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_FULLSCREEN);
+		sm.setTouchModeAbove(SlidingMenu.TOUCHMODE_MARGIN);
 		sm.setBehindWidthRes(R.dimen.slidingmenu_width);
 		sm.setShadowWidthRes(R.dimen.shadow_width);
 		sm.setShadowDrawable(R.drawable.slide_shadow);
