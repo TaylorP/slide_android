@@ -1,6 +1,8 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
+import net.orangebytes.slide.animation.AnimationFactory;
+import net.orangebytes.slide.animation.AnimationFactory.FlipDirection;
 import net.orangebytes.slide.model.PuzzleTile;
 import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
@@ -102,7 +104,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	
 	/// Toggles the view
 	public void toggleView() {
-		mFlipper.showNext();
+		//mFlipper.showNext();
+		AnimationFactory.flipTransition(mFlipper, FlipDirection.LEFT_RIGHT);
 	}
 	
 	/// Sets the puzzle, given an image or size

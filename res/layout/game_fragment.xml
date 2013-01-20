@@ -45,7 +45,7 @@
 		<ViewFlipper
 		    android:id="@+id/game_flipper"
 		    android:layout_width="fill_parent"
-		    android:layout_height="wrap_content"
+		    android:layout_height="fill_parent"
 		    android:layout_gravity="center" >
 
 			<RelativeLayout
@@ -67,7 +67,8 @@
            		android:layout_width="fill_parent"
            		android:layout_height="wrap_content"
            		android:orientation="horizontal"
-           		android:gravity="center" >
+           		android:gravity="center"
+           		android:layout_gravity="center" >
 				<ImageView
 				    android:id="@+id/preview_image"
 				    android:layout_width="wrap_content"
