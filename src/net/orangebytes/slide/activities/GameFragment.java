@@ -66,11 +66,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	mFlipper = (ViewFlipper) root.findViewById(R.id.game_flipper);
         mPreview = (ImageView) root.findViewById(R.id.preview_image);
         
-    	Animation in  = AnimationUtils.loadAnimation(mActivity, R.anim.grow_from_middle);
-    	Animation out = AnimationUtils.loadAnimation(mActivity, R.anim.shrink_to_middle);
-    	mFlipper.setInAnimation(in);
-    	mFlipper.setOutAnimation(out);
-    	
     	  
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
@@ -84,6 +79,14 @@ public class GameFragment extends Fragment implements OnTouchListener{
     		   }
     		  });
     	
+    	ImageView i = (ImageView)root.findViewById(R.id.flip_button);
+    	i.setClickable(true);
+    	i.setOnClickListener(new OnClickListener() {
+ 		   @Override
+ 		   public void onClick(View v) {
+ 		      ((MainActivity)mActivity).togglePreview();
+ 		   }
+ 		  });
     	
     	mGameState = GamePreferences.get(mActivity).loadGameState();
 		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
