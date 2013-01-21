@@ -22,8 +22,6 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -66,7 +64,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	mFlipper = (ViewFlipper) root.findViewById(R.id.game_flipper);
         mPreview = (ImageView) root.findViewById(R.id.preview_image);
         
-    	  
+
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
     	
@@ -89,29 +87,41 @@ public class GameFragment extends Fragment implements OnTouchListener{
  		  });
     	
     	mGameState = GamePreferences.get(mActivity).loadGameState();
-		if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
+    	int orientation = getResources().getConfiguration().orientation;
+    	
+		if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+			if(mGameState.getOrientation() == GameState.sLandscape) {
+				setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
+			} else {
+				setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
+			}
+			mGameState.setOrientation(GameState.sLandscape);
 		} else {
-			setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
+			if(mGameState.getOrientation() == GameState.sPortrait) {
+				setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
+			} else {
+				setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
+			}
+			mGameState.setOrientation(GameState.sPortrait);
 		}
     	
         return root;
     }
 	
 	@Override
+	///Called when the activity pauses - use this to store the game state
 	public void onPause () {
 		super.onPause();
 		GamePreferences.get(mActivity).storeGameState(mGameState);
 	}
     
-	
 	/// Toggles the view
 	public void toggleView() {
 		//mFlipper.showNext();
 		AnimationFactory.flipTransition(mFlipper, FlipDirection.LEFT_RIGHT);
 	}
 	
-	/// Sets the puzzle, given an image or size
+	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
     	
     	if(pImage == -1) {
@@ -140,11 +150,9 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	int gridWidth = (tileSize + tilePadding)* mGameState.getX();
     	int gridHeight = (tileSize + tilePadding)* mGameState.getY();
     	
-    	
     	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mGameState.getX(),tileScale*mGameState.getY()));
     	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(gridWidth, gridHeight);
     	mPreview.setLayoutParams(params);
-    	
     	
     	mGameGrid.removeAllViews();
     	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams(gridWidth, gridHeight));

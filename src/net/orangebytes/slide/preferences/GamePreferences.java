@@ -25,6 +25,9 @@ public final class GamePreferences {
 	/// The image id key
 	private static final String sImageKey = "IMAGE_ID";
 	
+	/// The orientation key
+	private static final String sOrientationKey = "ORIENTATION";
+	
 	
 	/// The shared preferences instance, containing user settings
     private SharedPreferences mSharedPrefs;
@@ -54,7 +57,8 @@ public final class GamePreferences {
 		GameState state = new GameState(
 				mSharedPrefs.getInt(sGridXKey, 3),
 				mSharedPrefs.getInt(sGridYKey, 3),
-				mSharedPrefs.getInt(sImageKey, R.drawable.beach));
+				mSharedPrefs.getInt(sImageKey, R.drawable.beach),
+				mSharedPrefs.getBoolean(sOrientationKey, GameState.sPortrait));
 		
 		return state;
 	}
@@ -63,7 +67,8 @@ public final class GamePreferences {
 	public void storeGameState(GameState pState) {
 		mPrefsEditor.putInt(sGridXKey, pState.getX())
 					.putInt(sGridYKey, pState.getY())
-					.putInt(sImageKey, pState.getImage());
+					.putInt(sImageKey, pState.getImage())
+					.putBoolean(sOrientationKey, pState.getOrientation());
 		mPrefsEditor.commit();
 	}
 }

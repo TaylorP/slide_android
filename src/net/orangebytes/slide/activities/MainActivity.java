@@ -3,10 +3,7 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
-import android.util.Log;
 import android.view.KeyEvent;
-import android.view.View;
-import android.view.View.OnKeyListener;
 
 import com.slidingmenu.lib.SlidingMenu;
 import com.slidingmenu.lib.app.SlidingFragmentActivity;
