@@ -26,6 +26,10 @@ public class PuzzleTile {
 		id = pId;
 	}
 	
+	public boolean isEmpty() {
+		return mEmptyCell;
+	}
+	
 	public boolean canSlide(int pDirection) {
 		if (mEmptyCell) {
 	        return true;

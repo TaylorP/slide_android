@@ -14,6 +14,7 @@ import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -168,19 +169,19 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	    	int xPos = (tileSize + tilePadding) * i;
     	    	int yPos = (tileSize + tilePadding) * j;
     	    	
-
-    	    	Bitmap tileImage = Bitmap.createBitmap(image, i*tileScale, j*tileScale, tileScale, tileScale);
-    	    	
     	    	ImageView tile = (ImageView)viewInflator.inflate(R.layout.puzzle_tile, null);
     	    	tile.setLayoutParams(TileUtils.getTileLayout(tileSize, xPos, yPos));
     	    	tile.setOnTouchListener(this);
+
     	    	
     	    	mViews[count] = tile;
     	    	
     	    	if(count == tileCount-1) {
     	    		tile.setTag(new PuzzleTile(tile,true,count));
     	    		tile.setBackgroundColor(getResources().getColor(R.color.clear));
+    	    		tile.setImageResource(R.drawable.shuffle);
     	    	} else {
+    	    		Bitmap tileImage = Bitmap.createBitmap(image, i*tileScale, j*tileScale, tileScale, tileScale);
     	    		tile.setTag(new PuzzleTile(tile,count));
     	    		tile.setImageBitmap(tileImage);
     	    	}
@@ -214,8 +215,12 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	@Override
     public boolean onTouch(View v, MotionEvent e) {
     	if(e.getAction() == MotionEvent.ACTION_UP) {
+			PuzzleTile p = (PuzzleTile)v.getTag();
+			if(p.isEmpty()) {
+				((ImageView)v).setImageBitmap(null);
+				shufflePuzzle();
+			}
     		for(int i = 0; i<4; i++) {
-    			PuzzleTile p = (PuzzleTile)v.getTag();
     			if (p.canSlide(i)){
     				p.swap(i);
     				break;
@@ -224,4 +229,49 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	}
         return true;
     }
+	
+	static int sLastDirection = -1;
+	static int sMixCount = 0;
+	public void shufflePuzzle() {
+		
+	    int cellCount = mViews.length;
+	    
+	    int cell = (int) (Math.random()*(cellCount-1));
+	    int dir = (int) (Math.random()*4);
+	    
+	    while(dir%2 == sLastDirection%2 && (Math.random()*100 < 80)) 
+	    {
+	    	Log.d("Shuffling", "dir:"+dir+", lastDir:"+sLastDirection);
+	        dir = (int) (Math.random()*4);
+	    }
+	    Log.d("Shuffling", "cell:" + cell + " , dir:" + dir);
+	    if (((PuzzleTile)mViews[cell].getTag()).canSlide(dir)) 
+	    {
+	    	Log.d("Shuffling", "sMixCount:" + sMixCount);
+	        sLastDirection = dir;
+	        sMixCount++;
+	        if(sMixCount >= 40)
+	        {
+	        	sMixCount = 0;
+	        	sLastDirection = -1;
+	            return;
+	        }
+	        
+	        ((PuzzleTile)mViews[cell].getTag()).swap(dir);
+
+	        final Handler handler = new Handler();
+	        handler.postDelayed(new Runnable() {
+	          @Override
+	          public void run() {
+	        	  shufflePuzzle();
+	          }
+	        }, 150);
+
+	    }
+	    else
+	    {
+	    	shufflePuzzle();
+	    }
+
+	}
 }

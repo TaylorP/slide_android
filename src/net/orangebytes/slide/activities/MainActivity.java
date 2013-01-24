@@ -56,7 +56,7 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void togglePreview() {
 		mGameFragment.toggleView();
 	}
-
+	
 	@Override
 	/// Override the key down - we use this to open the options and preview using hard buttons if available
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
