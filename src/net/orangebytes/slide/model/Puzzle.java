@@ -83,4 +83,35 @@ public class Puzzle {
     		}
     	}
 	}
+	
+	public boolean isSolved(GameState pState) {
+		if(!isActive())
+			return false;
+		
+		int index = 0;
+    	for(int i = 0; i < pState.getX(); i++){
+    		for(int j = 0; j< pState.getY(); j++){
+    			
+                if(j > 0){
+                	if(mPuzzleTiles[index].mNeighbours[1] != mPuzzleTiles[index-1])
+                		return false;
+                }
+                if(j< pState.getY()-1){
+                	if(mPuzzleTiles[index].mNeighbours[3] != mPuzzleTiles[index+1])
+                		return false;
+                }
+                if(i > 0){
+                	if(mPuzzleTiles[index].mNeighbours[0] != mPuzzleTiles[index-pState.getY()])
+                		return false;
+                }
+                if(i< pState.getX()-1){
+                	if(mPuzzleTiles[index].mNeighbours[2] != mPuzzleTiles[index+pState.getY()])
+                		return false;
+                }
+                index++;
+		    }
+    	}  
+    	
+    	return true;
+	}
 }

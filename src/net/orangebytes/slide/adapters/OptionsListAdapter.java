@@ -2,17 +2,20 @@ package net.orangebytes.slide.adapters;
 
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AlphaAnimation;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 
 /// The ListAdapter for displaying images and related data in the options menu.
@@ -23,6 +26,9 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 	
 	/// The array of values the adapter should pull from
 	private final PuzzleInfo[] mValues;
+	
+	/// The corresponding list view
+	private final ListView mList;
 
 	
 	/// Static class to implement the ViewHolder pattern, for speeding up list processing
@@ -43,11 +49,12 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 
 	
 	/// Constructor taking a context and data array as parameters
-	public OptionsListAdapter(Context context, PuzzleInfo[] values) {
+	public OptionsListAdapter(Context context, PuzzleInfo[] values, ListView pList) {
 		super(context, R.layout.puzzle_info, values);
 		
 		mContext = context;
 		mValues = values;
+		mList = pList;
 	}
 
 	@Override
@@ -91,10 +98,12 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		convertView.setFocusable(false);
 		convertView.setClickable(false);
 
+
 	    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
 	    aa.setDuration(10);
 	    aa.setFillAfter(true);
 	    convertView.startAnimation(aa);
+	    
 		return convertView;
 	}
 	

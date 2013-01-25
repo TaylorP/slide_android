@@ -190,6 +190,10 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	}
     	mPuzzle.generateLinks(mGameState);
     	mPuzzle.linkPuzzle(mGameState, mViews);
+    	
+    	if(mFlipper.getDisplayedChild() == 1) {
+    		toggleView();
+    	}
     }
 
 	@Override
@@ -202,13 +206,26 @@ public class GameFragment extends Fragment implements OnTouchListener{
 					mPuzzle.setActive(true);
 					shufflePuzzle();
 				}
-			} else {
+			} else if(mPuzzle.isActive()) {
 	    		for(int i = 0; i<4; i++) {
 	    			if (p.canSlide(i)){
 	    				p.swap(i);
 	    				break;
 	    			}
 	    		}
+	    		
+				final Handler handler = new Handler();
+				handler.postDelayed(new Runnable() {
+					@Override
+					public void run() {
+						if (mPuzzle.isSolved(mGameState)) {
+							mViews[mGameState.getSize() - 1]
+									.setImageResource(R.drawable.shuffle);
+							mPuzzle.setActive(false);
+							toggleView();
+						}
+					}
+				}, 150);
 			}
     	}
         return true;

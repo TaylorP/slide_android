@@ -81,7 +81,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("leaf", "leaf_thumb", 15, 20),
 				new PuzzleInfo("peach", "peach_thumb", 15, 20) };
 
-		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
+		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues, mOptionsList);
 		
 		mOptionsList.setAdapter(mOptionsAdapter);
 		mOptionsList.setClickable(true);
