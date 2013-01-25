@@ -81,7 +81,6 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("leaf", "leaf_thumb", 15, 20),
 				new PuzzleInfo("peach", "peach_thumb", 15, 20) };
 
-		
 		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
 		
 		mOptionsList.setAdapter(mOptionsAdapter);
@@ -134,8 +133,6 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		    	   }
 		       }
 		   });
-
-                    
 
 		Animation in = AnimationUtils.loadAnimation(mActivity,android.R.anim.fade_in);
 		Animation out = AnimationUtils.loadAnimation(mActivity,R.anim.fast_fade_out);

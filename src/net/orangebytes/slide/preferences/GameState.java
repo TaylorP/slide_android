@@ -45,6 +45,11 @@ public class GameState {
 		return mImage;
 	}
 	
+	/// Gets the x*y value, the number of tiles in total
+	public int getSize() {
+		return mSizeY*mSizeX;
+	}
+	
 	/// Returns the orientation
 	public boolean getOrientation() {
 		return mOrientation;

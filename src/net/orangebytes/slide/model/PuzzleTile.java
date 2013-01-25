@@ -1,29 +1,26 @@
 package net.orangebytes.slide.model;
 
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
 import android.widget.RelativeLayout.LayoutParams;
 
 public class PuzzleTile {
-	private boolean mEmptyCell = false;
+	private boolean mEmptyCell;
 	public PuzzleTile mNeighbours[];
 	private View mView;
-	public int id;
 	
-	public PuzzleTile(View pView, int pId) {
+	public PuzzleTile() {
 		mNeighbours = new PuzzleTile[4];
-		mView = pView;
-		id = pId;
+		mEmptyCell = false;
 	}
 	
-	public PuzzleTile(View pView, boolean pEmpty, int pId) {
-		mNeighbours = new PuzzleTile[4];
+	public void setView(View pView) {
 		mView = pView;
+	}
+	
+	public void setEmpty(boolean pEmpty) {
 		mEmptyCell = pEmpty;
-		id = pId;
 	}
 	
 	public boolean isEmpty() {
@@ -95,11 +92,11 @@ public class PuzzleTile {
 	    final int destY = swapDest.mView.getTop();
 
 	    TranslateAnimation t = new TranslateAnimation (-(srcX-destX), 0, -(srcY-destY), 0);
-	    t.setDuration(140);
+	    t.setDuration(100);
 	    swapDest.mView.startAnimation(t);
 	    
 	    TranslateAnimation t2 = new TranslateAnimation (srcX-destX, 0, srcY-destY, 0);
-	    t2.setDuration(140);
+	    t2.setDuration(100);
 	    mView.startAnimation(t2);
 	  
 	    swapDest.mView.offsetLeftAndRight(srcX-destX);
