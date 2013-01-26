@@ -1,5 +1,6 @@
 package net.orangebytes.slide.model;
 
+import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
@@ -60,32 +61,24 @@ public class PuzzleTile {
 	    mView.setLayoutParams(params);
 	}
 	
-	public void unslide(int pDirection, int amount) {
+	public void unslide(int pDirection) {
 	    if(mEmptyCell)
 	        return;
 	    
 	    if(mNeighbours[pDirection] != null) {
-	    	mNeighbours[pDirection].unslide(pDirection, amount);
+	    	mNeighbours[pDirection].unslide(pDirection);
 	    }
 	    
-	    final RelativeLayout.LayoutParams params = (LayoutParams) mView.getLayoutParams();
-	    
-	    if(pDirection == 0 || pDirection == 2) {
-	    	params.leftMargin -= amount;
-	    } else {
-	    	params.topMargin -= amount;
-	    }
-	    
-	    mView.setLayoutParams(params);
+	    mView.setLayoutParams(new LayoutParams(mRealLayout));
 	}
 	
-	public void swap(int pDirection)
+	public void swap(int pDirection, boolean fast)
 	{
 	    if(mEmptyCell)
 	        return;
 	    
 	    if(mNeighbours[pDirection] != null)
-	        mNeighbours[pDirection].swap(pDirection);
+	        mNeighbours[pDirection].swap(pDirection, fast);
 	    
 	    final PuzzleTile swapDest = mNeighbours[pDirection];
 	    PuzzleTile dstCells[] = new PuzzleTile[4];
@@ -132,12 +125,20 @@ public class PuzzleTile {
 	    final int destX = swapDest.mRealLayout.leftMargin;
 	    final int destY = swapDest.mRealLayout.topMargin;
 
+	   // float time =  (float)(Math.max(Math.abs(mView.getLeft()-destX), Math.abs(mView.getTop()-destY))) /
+	   // 		(float)(Math.max(Math.abs(destX-srcX), Math.abs(destY-srcY)));
+	   // Log.d("Time", time + "");
+	    
+	    int time = 100;
+	    if(fast)
+	    	time = 40;
+	    
 	    TranslateAnimation t = new TranslateAnimation (destX - srcX, 0, destY-srcY, 0);
-	    t.setDuration(100);
+	    t.setDuration(time);
 	    swapDest.mView.startAnimation(t);
 	    
 	    TranslateAnimation t2 = new TranslateAnimation (mView.getLeft()-destX, 0, mView.getTop()-destY, 0);
-	    t2.setDuration(100);
+	    t2.setDuration(time);
 	    mView.startAnimation(t2);
 	  
 	    swapDest.mView.offsetLeftAndRight(srcX-destX);

@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
@@ -74,6 +75,9 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	
 	/// Direction of the sliding
 	private int mDirection;
+	
+	/// Hack 
+	private View mView;
 	
 	@Override
     /// Creates the view for this fragment
@@ -177,11 +181,11 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	
     	mGameGrid.removeAllViews();
     	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams(gridWidth, gridHeight));
+    	mGameGrid.setOnTouchListener(this);
     	mViews = new ImageView[mGameState.getSize()];
     	
     	LayoutInflater viewInflator = (LayoutInflater)mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
-    	Log.d("TileSize", tileSize + "");
     	int count = 0;
     	for(int i = 0; i < mGameState.getX(); i++){
     		for(int j = 0; j< mGameState.getY(); j++){
@@ -193,7 +197,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	    	
     	    	ImageView tile = (ImageView)viewInflator.inflate(R.layout.puzzle_tile, null);
     	    	tile.setLayoutParams(tileLayout);
-    	    	tile.setOnTouchListener(this);
     	    	
     	    	if(count == mGameState.getSize()-1) {;
     	    		tile.setBackgroundColor(getResources().getColor(R.color.clear));
@@ -217,17 +220,33 @@ public class GameFragment extends Fragment implements OnTouchListener{
     }
 
 	@Override
-    public boolean onTouch(View v, MotionEvent e) {
+    public boolean onTouch(View view, MotionEvent e) {	    
 		if(e.getAction() == MotionEvent.ACTION_DOWN) {
+			
+			View v = null;
+			for(int i =0; i<mViews.length; i++) {
+			    Rect _bounds = new Rect();
+			    mViews[i].getHitRect(_bounds);
+			    if (_bounds.contains((int)e.getX(), (int)e.getY())) {
+			    	v = mViews[i];
+			    }
+			}
+			
+			if(v == null) {
+				return true;
+			}
+			
+			mView = v;
+			
 			mInitialX = mLastX = e.getX();
 			mInitialY = mLastY = e.getY();
 			mSliding = false;
 		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-			mSliding = true;
-			PuzzleTile p = (PuzzleTile)v.getTag();
 			
-			float deltaX = e.getX() - mLastX;
-			float deltaY = e.getY() - mLastY;
+			PuzzleTile p = (PuzzleTile)mView.getTag();
+			
+			float deltaX = (e.getX() - mLastX);
+			float deltaY = (e.getY() - mLastY);
 			
 			mLastX = e.getX();
 			mLastY = e.getY();
@@ -235,11 +254,13 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			if(deltaX < 0) {
 				if(p.canSlide(0)){
 					mDirection = 0;
+					mSliding = true;
 					p.slide(0, (int) deltaX);
 				}
 			} else {
 				if(p.canSlide(2)) {
 					mDirection = 2;
+					mSliding = true;
 					p.slide(2, (int) deltaX);
 					return true;
 				}
@@ -248,6 +269,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			if(deltaY < 0) {
 				if(p.canSlide(1)) {
 					mDirection = 1;
+					mSliding = true;
 					p.slide(1, (int) deltaY);
 					return true;
 				}
@@ -255,30 +277,31 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			else {
 				if(p.canSlide(3)) {
 					mDirection = 3;
+					mSliding = true;
 					p.slide(3, (int) deltaY);
 					return true;
 				}
 			}
 			
 		} else if(e.getAction() == MotionEvent.ACTION_UP) {
-			PuzzleTile p = (PuzzleTile)v.getTag();
+			Log.d("HERE", "here");
+			PuzzleTile p = (PuzzleTile)mView.getTag();
 			if(mSliding) {
-				float halfWay = v.getWidth() / 2;
-				float deltaX = e.getX() - mInitialX;
-				float deltaY = e.getY() - mInitialY;
-				
+				float halfWay = mView.getWidth() / 3;
+				float deltaX = (e.getX() - mInitialX);
+				float deltaY = (e.getY() - mInitialY);
 				if(mDirection == 0 || mDirection == 2) {
 					if(Math.abs(deltaX) >= halfWay ) {
-						p.swap(mDirection);
+						p.swap(mDirection, true);
 					} else 
 					{
-						p.unslide(mDirection, (int) deltaX);
+						p.unslide(mDirection);
 					}
 				} else {
 					if(Math.abs(deltaY) >= halfWay) {
-						p.swap(mDirection);
+						p.swap(mDirection, true);
 					} else { 
-						p.unslide(mDirection, (int) deltaY);
+						p.unslide(mDirection);
 					}
 				}
 				return true;
@@ -286,14 +309,14 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			
 			if(p.isEmpty()) {
 				if(!mPuzzle.isActive()) {
-					((ImageView)v).setImageBitmap(null);
+					((ImageView)mView).setImageBitmap(null);
 					mPuzzle.setActive(true);
 					shufflePuzzle();
 				}
 			} else if(mPuzzle.isActive()) {
 	    		for(int i = 0; i<4; i++) {
 	    			if (p.canSlide(i)){
-	    				p.swap(i);
+	    				p.swap(i, false);
 	    				break;
 	    			}
 	    		}
@@ -311,6 +334,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 					}
 				}, 150);
 			}
+			mView = null;
     	}
         return true;
     }
@@ -336,7 +360,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	            return;
 	        }
 	        
-	        ((PuzzleTile)mViews[cell].getTag()).swap(dir);
+	        ((PuzzleTile)mViews[cell].getTag()).swap(dir, false);
 
 	        final Handler handler = new Handler();
 	        handler.postDelayed(new Runnable() {
