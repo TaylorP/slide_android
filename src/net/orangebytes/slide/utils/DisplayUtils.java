@@ -39,18 +39,20 @@ public class DisplayUtils {
 		
 		sDisplaySizes = new ArrayList<Point>();
 		
-		int xMin = 3;
-		
 		int xMax = (sDisplayWidth - 160) / 100;
 		int yMax = (sDisplayHeight - 160) / 100;
 		
-		for(int i = xMin; i<=xMax; i++) {
-			if(i > yMax)
+		int min = 3;
+		int max = xMax < yMax ? xMax : yMax;
+		int alt = xMax < yMax ? yMax : xMax;
+		
+		for(int i = min; i<=max; i++) {
+			if(i > alt)
 				break;
 			
 			sDisplaySizes.add(new Point(i,i));
 			
-			if(i+1 <= yMax)
+			if(i+1 <= alt)
 				sDisplaySizes.add(new Point(i, i+1));
 		}
 	}
@@ -73,10 +75,7 @@ public class DisplayUtils {
 	
 	/// Gets the display sizes
 	public static ArrayList<Point> getDisplaySizes(Activity pActivity) {
-		if(sDisplaySizes == null) {
-			buildDisplaySizes(pActivity);
-		}
-		
+		buildDisplaySizes(pActivity);
 		return sDisplaySizes;
 	}
 }

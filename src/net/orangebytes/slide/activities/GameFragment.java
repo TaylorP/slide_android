@@ -57,6 +57,24 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The views
 	private ImageView mViews[];
 	
+	/// The last touch x spot
+	private float mLastX;
+	
+	/// The last touch y spot
+	private float mLastY;
+	
+	/// The inital x spot
+	private float mInitialX;
+	
+	/// The inital y spot
+	private float mInitialY;
+	
+	/// Flag to indicate we've been sliding
+	private boolean mSliding;
+	
+	/// Direction of the sliding
+	private int mDirection;
+	
 	@Override
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -200,8 +218,72 @@ public class GameFragment extends Fragment implements OnTouchListener{
 
 	@Override
     public boolean onTouch(View v, MotionEvent e) {
-    	if(e.getAction() == MotionEvent.ACTION_UP) {
+		if(e.getAction() == MotionEvent.ACTION_DOWN) {
+			mInitialX = mLastX = e.getX();
+			mInitialY = mLastY = e.getY();
+			mSliding = false;
+		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+			mSliding = true;
 			PuzzleTile p = (PuzzleTile)v.getTag();
+			
+			float deltaX = e.getX() - mLastX;
+			float deltaY = e.getY() - mLastY;
+			
+			mLastX = e.getX();
+			mLastY = e.getY();
+			
+			if(deltaX < 0) {
+				if(p.canSlide(0)){
+					mDirection = 0;
+					p.slide(0, (int) deltaX);
+				}
+			} else {
+				if(p.canSlide(2)) {
+					mDirection = 2;
+					p.slide(2, (int) deltaX);
+					return true;
+				}
+			}
+			
+			if(deltaY < 0) {
+				if(p.canSlide(1)) {
+					mDirection = 1;
+					p.slide(1, (int) deltaY);
+					return true;
+				}
+			}
+			else {
+				if(p.canSlide(3)) {
+					mDirection = 3;
+					p.slide(3, (int) deltaY);
+					return true;
+				}
+			}
+			
+		} else if(e.getAction() == MotionEvent.ACTION_UP) {
+			PuzzleTile p = (PuzzleTile)v.getTag();
+			if(mSliding) {
+				float halfWay = v.getWidth() / 2;
+				float deltaX = e.getX() - mInitialX;
+				float deltaY = e.getY() - mInitialY;
+				
+				if(mDirection == 0 || mDirection == 2) {
+					if(Math.abs(deltaX) >= halfWay ) {
+						p.swap(mDirection);
+					} else 
+					{
+						p.unslide(mDirection, (int) deltaX);
+					}
+				} else {
+					if(Math.abs(deltaY) >= halfWay) {
+						p.swap(mDirection);
+					} else { 
+						p.unslide(mDirection, (int) deltaY);
+					}
+				}
+				return true;
+			}
+			
 			if(p.isEmpty()) {
 				if(!mPuzzle.isActive()) {
 					((ImageView)v).setImageBitmap(null);
