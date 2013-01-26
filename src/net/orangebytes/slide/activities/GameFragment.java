@@ -17,6 +17,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -162,6 +163,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	
     	LayoutInflater viewInflator = (LayoutInflater)mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
+    	Log.d("TileSize", tileSize + "");
     	int count = 0;
     	for(int i = 0; i < mGameState.getX(); i++){
     		for(int j = 0; j< mGameState.getY(); j++){

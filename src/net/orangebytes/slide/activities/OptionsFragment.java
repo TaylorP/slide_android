@@ -3,12 +3,14 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.adapters.OptionsListAdapter;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -144,6 +146,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mSwitcher.setText(mActivity.getString(R.string.grid_size));
 
 		final SeekBar sk = (SeekBar) root.findViewById(R.id.game_size_bar);
+		sk.setMax(DisplayUtils.getDisplaySizes(mActivity).size()-1);
+		
 		sk.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
@@ -157,30 +161,10 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				mSwitcher.setOutAnimation(out);
 				mSwitcher.setText(mActivity.getString(R.string.grid_size));
 				
-				int xSize = 3;
-				int ySize = 3;
-				switch (seekBar.getProgress()) {
-				case 0:
-					xSize = 3;
-					ySize = 3;
-					break;
-				case 1:
-					xSize = 3;
-					ySize = 4;
-					break;
-				case 2:
-					xSize = 4;
-					ySize = 4;
-					break;
-				case 3:
-					xSize = 4;
-					ySize = 5;
-					break;
-				case 4:
-					xSize = 5;
-					ySize = 5;
-					break;
-				}
+				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
+				int xSize = p.x;
+				int ySize = p.y;
+
 				if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
 					((MainActivity)mActivity).setPuzzle(-1, ySize, xSize);
 				} else {
@@ -203,25 +187,13 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-
-				switch (progress) {
-				case 0:
-					mSwitcher.setText("3x3");
-					break;
-				case 1:
-					mSwitcher.setText("3x4");
-					break;
-				case 2:
-					mSwitcher.setText("4x4");
-					break;
-				case 3:
-					mSwitcher.setText("4x5");
-					break;
-				case 4:
-					mSwitcher.setText("5x5");
-					break;
-				}
-
+				if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
+					mSwitcher.setText(p.y+"x"+p.x);
+				} else {
+					Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
+					mSwitcher.setText(p.x+"x"+p.y);
+				}	
 			}
 		});
 
@@ -234,12 +206,10 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		TextView t = new TextView(mActivity);
 		t.setGravity(Gravity.CENTER_VERTICAL | Gravity.RIGHT);
 		t.setTextSize(18);
-		LayoutParams p = new LayoutParams(LayoutParams.MATCH_PARENT,
-				LayoutParams.MATCH_PARENT);
+		LayoutParams p = new LayoutParams(LayoutParams.MATCH_PARENT,LayoutParams.MATCH_PARENT);
 		t.setLayoutParams(p);
 		t.setTextColor(Color.parseColor("#BBBBBB"));
-		t.setTypeface(Typeface.createFromAsset(mActivity.getAssets(),
-				"Roboto-Light.ttf"));
+		t.setTypeface(Typeface.createFromAsset(mActivity.getAssets(),"Roboto-Light.ttf"));
 		return t;
 	}
 }
