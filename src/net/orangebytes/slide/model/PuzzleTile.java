@@ -8,9 +8,10 @@ import android.widget.RelativeLayout.LayoutParams;
 
 public class PuzzleTile {
 	private boolean mEmptyCell;
-	public PuzzleTile mNeighbours[];
 	private View mView;
 	private RelativeLayout.LayoutParams mRealLayout;
+	
+	public PuzzleTile mNeighbours[];
 	
 	public PuzzleTile() {
 		mNeighbours = new PuzzleTile[4];
@@ -20,6 +21,10 @@ public class PuzzleTile {
 	public void setView(View pView) {
 		mView = pView;
 		mRealLayout = new LayoutParams((LayoutParams) mView.getLayoutParams());
+	}
+	
+	public RelativeLayout.LayoutParams getRealLayout() {
+		return mRealLayout;
 	}
 	
 	public void setEmpty(boolean pEmpty) {
@@ -42,11 +47,24 @@ public class PuzzleTile {
 	    return false;
 	}
 	
-	public void slide(int pDirection, int amount) {
+	public boolean slide(int pDirection, int amount) {
+		Log.d("Slide", "pDirection: " + pDirection +", amount: " + amount);
 	    if(mEmptyCell)
-	        return;
+	        return false;
 	    
+		float totalX = Math.abs((mView.getLeft()+amount) - mRealLayout.leftMargin);
+		float totalY = Math.abs((mView.getTop()+amount) - mRealLayout.topMargin);
+		Log.d("Slide", "totalX: " + totalX + ", totalY:" + totalY);
+
+		if(totalX >= (mView.getWidth()+6) || totalY >= (mView.getHeight()+6)) {
+			Log.d("Slide", "Too close to edge");
+			swap(pDirection, true);
+		    
+			return true;
+		}
+		
 	    if(mNeighbours[pDirection] != null) {
+	    	Log.d("Slide", "Sliding neighbour");
 	    	mNeighbours[pDirection].slide(pDirection, amount);
 	    }
 	    
@@ -59,6 +77,8 @@ public class PuzzleTile {
 	    }
 	    
 	    mView.setLayoutParams(params);
+	    
+	    return false;
 	}
 	
 	public void unslide(int pDirection) {
@@ -124,27 +144,21 @@ public class PuzzleTile {
 	    
 	    final int destX = swapDest.mRealLayout.leftMargin;
 	    final int destY = swapDest.mRealLayout.topMargin;
-
-	   // float time =  (float)(Math.max(Math.abs(mView.getLeft()-destX), Math.abs(mView.getTop()-destY))) /
-	   // 		(float)(Math.max(Math.abs(destX-srcX), Math.abs(destY-srcY)));
-	   // Log.d("Time", time + "");
 	    
-	    int time = 100;
-	    if(fast)
-	    	time = 40;
-	    
-	    TranslateAnimation t = new TranslateAnimation (destX - srcX, 0, destY-srcY, 0);
-	    t.setDuration(time);
-	    swapDest.mView.startAnimation(t);
-	    
-	    TranslateAnimation t2 = new TranslateAnimation (mView.getLeft()-destX, 0, mView.getTop()-destY, 0);
-	    t2.setDuration(time);
-	    mView.startAnimation(t2);
-	  
-	    swapDest.mView.offsetLeftAndRight(srcX-destX);
-	    swapDest.mView.offsetTopAndBottom(srcY-destY);
-	    mView.offsetLeftAndRight(destX-mView.getLeft());
-	    mView.offsetTopAndBottom(destY-mView.getRight());
+	    if(!fast) {
+		    TranslateAnimation t = new TranslateAnimation (destX - srcX, 0, destY-srcY, 0);
+		    t.setDuration(100);
+		    swapDest.mView.startAnimation(t);
+		    
+		    TranslateAnimation t2 = new TranslateAnimation (mView.getLeft()-destX, 0, mView.getTop()-destY, 0);
+		    t2.setDuration(100);
+		    mView.startAnimation(t2);
+		  
+		    swapDest.mView.offsetLeftAndRight(srcX-destX);
+		    swapDest.mView.offsetTopAndBottom(srcY-destY);
+		    mView.offsetLeftAndRight(destX-mView.getLeft());
+		    mView.offsetTopAndBottom(destY-mView.getRight());
+	    }
 	    
     	swapDest.mView.setLayoutParams(new LayoutParams(mRealLayout));
     	mView.setLayoutParams(new LayoutParams(swapDest.mRealLayout));

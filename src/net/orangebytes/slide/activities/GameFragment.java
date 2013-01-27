@@ -18,7 +18,6 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -58,26 +57,17 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The views
 	private ImageView mViews[];
 	
-	/// The last touch x spot
-	private float mLastX;
+	///Runnable to check completion of the puzzle
+	private final Runnable mCompletionCheck = new Runnable() {
+		public void run() {
+			if (mPuzzle.isSolved(mGameState)) {
+				mViews[mGameState.getSize() - 1].setImageResource(R.drawable.shuffle);
+				toggleView();
+			}
+		}
+	};
 	
-	/// The last touch y spot
-	private float mLastY;
 	
-	/// The inital x spot
-	private float mInitialX;
-	
-	/// The inital y spot
-	private float mInitialY;
-	
-	/// Flag to indicate we've been sliding
-	private boolean mSliding;
-	
-	/// Direction of the sliding
-	private int mDirection;
-	
-	/// Hack 
-	private View mView;
 	
 	@Override
     /// Creates the view for this fragment
@@ -90,8 +80,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	mPuzzle = Puzzle.get();
     	
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
-    	mFlipper = (ViewFlipper) root.findViewById(R.id.game_flipper);
-        mPreview = (ImageView) root.findViewById(R.id.preview_image);
+    	mFlipper  = (ViewFlipper) root.findViewById(R.id.game_flipper);
+        mPreview  = (ImageView) root.findViewById(R.id.preview_image);
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
@@ -147,10 +137,21 @@ public class GameFragment extends Fragment implements OnTouchListener{
 		AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
 	}
 	
+	/// Gets the child view for a give position
+	private ImageView childAtPosition(int pX, int pY) {
+		for(int i =0; i<mViews.length; i++) {
+		    Rect _bounds = new Rect();
+		    mViews[i].getHitRect(_bounds);
+		    if (_bounds.contains(pX, pY)) {
+		    	return mViews[i];
+		    }
+		}
+		
+		return null;
+	}
+	
 	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
-    	
-    	mPuzzle.setActive(false);
     	
     	if(pImage == -1) {
     		pImage = mGameState.getImage();
@@ -220,159 +221,40 @@ public class GameFragment extends Fragment implements OnTouchListener{
     }
 
 	@Override
-    public boolean onTouch(View view, MotionEvent e) {	    
-		if(e.getAction() == MotionEvent.ACTION_DOWN) {
-			
-			View v = null;
-			for(int i =0; i<mViews.length; i++) {
-			    Rect _bounds = new Rect();
-			    mViews[i].getHitRect(_bounds);
-			    if (_bounds.contains((int)e.getX(), (int)e.getY())) {
-			    	v = mViews[i];
-			    }
-			}
-			
-			if(v == null) {
+    public boolean onTouch(View view, MotionEvent e) {
+		if(mPuzzle.isActive()) {
+			if(e.getAction() == MotionEvent.ACTION_DOWN) {
+				View v = childAtPosition((int)e.getX(), (int)e.getY());
+				if(v != null) {
+					mPuzzle.touchDown(v, e.getX(), e.getY());
+				}
 				return true;
-			}
-			
-			mView = v;
-			
-			mInitialX = mLastX = e.getX();
-			mInitialY = mLastY = e.getY();
-			mSliding = false;
-		} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-			
-			PuzzleTile p = (PuzzleTile)mView.getTag();
-			
-			float deltaX = (e.getX() - mLastX);
-			float deltaY = (e.getY() - mLastY);
-			
-			mLastX = e.getX();
-			mLastY = e.getY();
-			
-			if(deltaX < 0) {
-				if(p.canSlide(0)){
-					mDirection = 0;
-					mSliding = true;
-					p.slide(0, (int) deltaX);
-				}
-			} else {
-				if(p.canSlide(2)) {
-					mDirection = 2;
-					mSliding = true;
-					p.slide(2, (int) deltaX);
+				
+			} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
+				mPuzzle.touchMove(e.getX(), e.getY());
+				return true;
+				
+			} else if(e.getAction() == MotionEvent.ACTION_UP) {
+				if(mPuzzle.touchFinished(e.getX(), e.getY())) {
+					final Handler handler = new Handler();
+					handler.postDelayed(mCompletionCheck,150);
 					return true;
-				}
-			}
-			
-			if(deltaY < 0) {
-				if(p.canSlide(1)) {
-					mDirection = 1;
-					mSliding = true;
-					p.slide(1, (int) deltaY);
-					return true;
-				}
-			}
-			else {
-				if(p.canSlide(3)) {
-					mDirection = 3;
-					mSliding = true;
-					p.slide(3, (int) deltaY);
-					return true;
-				}
-			}
-			
-		} else if(e.getAction() == MotionEvent.ACTION_UP) {
-			Log.d("HERE", "here");
-			PuzzleTile p = (PuzzleTile)mView.getTag();
-			if(mSliding) {
-				float halfWay = mView.getWidth() / 3;
-				float deltaX = (e.getX() - mInitialX);
-				float deltaY = (e.getY() - mInitialY);
-				if(mDirection == 0 || mDirection == 2) {
-					if(Math.abs(deltaX) >= halfWay ) {
-						p.swap(mDirection, true);
-					} else 
-					{
-						p.unslide(mDirection);
-					}
-				} else {
-					if(Math.abs(deltaY) >= halfWay) {
-						p.swap(mDirection, true);
-					} else { 
-						p.unslide(mDirection);
-					}
 				}
 				return true;
 			}
-			
-			if(p.isEmpty()) {
-				if(!mPuzzle.isActive()) {
-					((ImageView)mView).setImageBitmap(null);
-					mPuzzle.setActive(true);
-					shufflePuzzle();
-				}
-			} else if(mPuzzle.isActive()) {
-	    		for(int i = 0; i<4; i++) {
-	    			if (p.canSlide(i)){
-	    				p.swap(i, false);
-	    				break;
-	    			}
-	    		}
-	    		
-				final Handler handler = new Handler();
-				handler.postDelayed(new Runnable() {
-					@Override
-					public void run() {
-						if (mPuzzle.isSolved(mGameState)) {
-							mViews[mGameState.getSize() - 1]
-									.setImageResource(R.drawable.shuffle);
-							mPuzzle.setActive(false);
-							toggleView();
-						}
+		} else {
+			if(e.getAction() == MotionEvent.ACTION_DOWN) {
+				ImageView v = childAtPosition((int)e.getX(), (int)e.getY());
+				if(v != null) {
+					PuzzleTile p = (PuzzleTile)v.getTag();
+					if(p.isEmpty()) {
+						v.setImageBitmap(null);
+						mPuzzle.shuffle(mGameState);
 					}
-				}, 150);
+				}
 			}
-			mView = null;
-    	}
-        return true;
-    }
-	
-	static int sLastDirection = -1;
-	static int sMixCount = 0;
-	public void shufflePuzzle() {
+		}
 		
-	    int cellCount = mViews.length;
-	    int cell = (int) (Math.random()*(cellCount-1));
-	    int dir = (int) (Math.random()*4);
-	    
-	    while(dir%2 == sLastDirection%2 && (Math.random()*100 < 80)) {
-	        dir = (int) (Math.random()*4);
-	    }
-
-	    if (((PuzzleTile)mViews[cell].getTag()).canSlide(dir)) {
-	        sLastDirection = dir;
-	        sMixCount++;
-	        if(sMixCount >= mGameState.getSize() * 3){
-	        	sMixCount = 0;
-	        	sLastDirection = -1;
-	            return;
-	        }
-	        
-	        ((PuzzleTile)mViews[cell].getTag()).swap(dir, false);
-
-	        final Handler handler = new Handler();
-	        handler.postDelayed(new Runnable() {
-	          @Override
-	          public void run() {
-	        	  shufflePuzzle();
-	          }
-	        }, 110);
-
-	    }
-	    else{
-	    	shufflePuzzle();
-	    }
-	}
+		return false;
+    }
 }
