@@ -11,12 +11,10 @@ import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TileUtils;
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -69,7 +67,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	};
 	
 	
-	
 	@Override
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -105,23 +102,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
  		   }
  		  });
     	
-    	int orientation = getResources().getConfiguration().orientation;
-    	
-		if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
-			if(mGameState.getOrientation() == GameState.sLandscape) {
-				setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
-			} else {
-				setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
-			}
-			mGameState.setOrientation(GameState.sLandscape);
-		} else {
-			if(mGameState.getOrientation() == GameState.sPortrait) {
-				setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
-			} else {
-				setPuzzle(mGameState.getImage(), mGameState.getY(), mGameState.getX());
-			}
-			mGameState.setOrientation(GameState.sPortrait);
-		}
+    	setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
     	
         return root;
     }
@@ -154,7 +135,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
     	
-    	  
     	if(pImage == -1) {
     		pImage = mGameState.getImage();
     	} else {

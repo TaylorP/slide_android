@@ -270,59 +270,62 @@ public class Puzzle {
 		if(mBlock)
 			return true;
 		
-		if(mView != null && mSliding) {
+		if(mView != null) {
+			
 			PuzzleTile p = (PuzzleTile)mView.getTag();
 			
-			if(mMaxDeltaX <= -50) {
-				if(p.canSlide(0)){
-					p.swap(0, 0);
-					return true;
+			if(mSliding) {
+				if(mMaxDeltaX <= -50) {
+					if(p.canSlide(0)){
+						p.swap(0, 0);
+						return true;
+					}
+				} else if(mMaxDeltaX >= 50) {
+					if(p.canSlide(2)) {
+						p.swap(2, 0);
+						
+						return true;
+					}
 				}
-			} else if(mMaxDeltaX >= 50) {
-				if(p.canSlide(2)) {
-					p.swap(2, 0);
-					
-					return true;
+				
+				if(mMaxDeltaY <= -50) {
+					if(p.canSlide(1)) {
+						p.swap(1, 0);
+						return true;
+					}
 				}
-			}
-			
-			if(mMaxDeltaY <= -50) {
-				if(p.canSlide(1)) {
-					p.swap(1, 0);
-					return true;
+				else if(mMaxDeltaY >= 50) {
+					if(p.canSlide(3)) {
+						p.swap(3, 0);
+						return true;
+					}
 				}
-			}
-			else if(mMaxDeltaY >= 50) {
-				if(p.canSlide(3)) {
-					p.swap(3, 0);
-					return true;
-				}
-			}
-			
-			float halfWay = mView.getWidth() / 3;
-			float deltaX = (mView.getLeft() - p.getRealLayout().leftMargin);
-			float deltaY = (mView.getTop() - p.getRealLayout().topMargin);
-			Log.d("TouchFinished", "Half: " + halfWay + ", deltaX: " + deltaX + ", deltaY: " +deltaY );
-			
-			if(mLastDirection == 0 || mLastDirection == 2) {
-				if(Math.abs(deltaX) >= halfWay ) {
-					p.swap(mLastDirection, 2);
-					Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
-					return true;
-				} else if(Math.abs(deltaX) >= 10) {
-					p.unslide(mLastDirection);
-					Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
-					return false;
-				}
-			} else {
-				if(Math.abs(deltaY) >= halfWay) {
-					p.swap(mLastDirection, 2);
-					Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
-					return true;
-				} else if(Math.abs(deltaY) >= 10) { 
-					p.unslide(mLastDirection);
-					Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
-					return false;
+				
+				float halfWay = mView.getWidth() / 3;
+				float deltaX = (mView.getLeft() - p.getRealLayout().leftMargin);
+				float deltaY = (mView.getTop() - p.getRealLayout().topMargin);
+				Log.d("TouchFinished", "Half: " + halfWay + ", deltaX: " + deltaX + ", deltaY: " +deltaY );
+				
+				if(mLastDirection == 0 || mLastDirection == 2) {
+					if(Math.abs(deltaX) >= halfWay ) {
+						p.swap(mLastDirection, 2);
+						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
+						return true;
+					} else if(Math.abs(deltaX) >= 10) {
+						p.unslide(mLastDirection);
+						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
+						return false;
+					}
+				} else {
+					if(Math.abs(deltaY) >= halfWay) {
+						p.swap(mLastDirection, 2);
+						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
+						return true;
+					} else if(Math.abs(deltaY) >= 10) { 
+						p.unslide(mLastDirection);
+						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
+						return false;
+					}
 				}
 			}
 			

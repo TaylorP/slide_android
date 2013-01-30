@@ -7,7 +7,6 @@ import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
@@ -83,7 +82,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("leaf", "leaf_thumb", 15, 20),
 				new PuzzleInfo("peach", "peach_thumb", 15, 20) };
 
-		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues, mOptionsList);
+		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
 		
 		mOptionsList.setAdapter(mOptionsAdapter);
 		mOptionsList.setClickable(true);
@@ -165,11 +164,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				int xSize = p.x;
 				int ySize = p.y;
 
-				if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					((MainActivity)mActivity).setPuzzle(-1, ySize, xSize);
-				} else {
-					((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);
-				}					
+				((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);				
 			}
 
 			@Override
@@ -187,13 +182,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-				if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-					Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
-					mSwitcher.setText(p.y+"x"+p.x);
-				} else {
-					Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
-					mSwitcher.setText(p.x+"x"+p.y);
-				}	
+				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
+				mSwitcher.setText(p.x+"x"+p.y);
 			}
 		});
 
