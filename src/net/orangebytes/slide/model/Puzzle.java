@@ -31,6 +31,8 @@ public class Puzzle {
 	private View  mView;
 	private float mLastX;
 	private float mLastY;
+	private float mMaxDeltaX;
+	private float mMaxDeltaY;
 	private boolean mSliding;
 	private boolean mBlock;
 	
@@ -63,7 +65,7 @@ public class Puzzle {
 	            return;
 	        }
 	        
-	        mPuzzleTiles[cell].swap(dir, false);
+	        mPuzzleTiles[cell].swap(dir, 1);
 
 	        final Handler handler = new Handler();
 	        handler.postDelayed(new Runnable() {
@@ -194,6 +196,8 @@ public class Puzzle {
 		mLastX = pX;
 		mLastY = pY;
 		mBlock = false;
+		mMaxDeltaX = 0;
+		mMaxDeltaY = 0;
 		
 		Log.d("TouchDown", "Sliding: " + mSliding + ", X: " + pX + ", " + pY);
 	}
@@ -222,6 +226,7 @@ public class Puzzle {
 				if(p.canSlide(0)){
 					Log.d("TouchMove", "sliding left");
 					mLastDirection = 0;
+					mMaxDeltaX=Math.min(deltaX, mMaxDeltaX);
 					mBlock = p.slide(0, (int) deltaX);
 					
 					return;
@@ -230,6 +235,7 @@ public class Puzzle {
 				if(p.canSlide(2)) {
 					Log.d("TouchMove", "sliding right");
 					mLastDirection = 2;
+					mMaxDeltaX=Math.max(deltaX, mMaxDeltaX);
 					mBlock = p.slide(2, (int) deltaX);
 					
 					return;
@@ -240,6 +246,7 @@ public class Puzzle {
 				if(p.canSlide(1)) {
 					Log.d("TouchMove", "sliding up");
 					mLastDirection = 1;
+					mMaxDeltaY=Math.min(deltaY, mMaxDeltaY);
 					mBlock = p.slide(1, (int) deltaY);
 					
 					return;
@@ -249,6 +256,7 @@ public class Puzzle {
 				if(p.canSlide(3)) {
 					Log.d("TouchMove", "sliding down");
 					mLastDirection = 3;
+					mMaxDeltaY=Math.max(deltaY, mMaxDeltaY);
 					mBlock = p.slide(3, (int) deltaY);
 					
 					return;
@@ -265,6 +273,32 @@ public class Puzzle {
 		if(mView != null && mSliding) {
 			PuzzleTile p = (PuzzleTile)mView.getTag();
 			
+			if(mMaxDeltaX <= -50) {
+				if(p.canSlide(0)){
+					p.swap(0, 0);
+					return true;
+				}
+			} else if(mMaxDeltaX >= 50) {
+				if(p.canSlide(2)) {
+					p.swap(2, 0);
+					
+					return true;
+				}
+			}
+			
+			if(mMaxDeltaY <= -50) {
+				if(p.canSlide(1)) {
+					p.swap(1, 0);
+					return true;
+				}
+			}
+			else if(mMaxDeltaY >= 50) {
+				if(p.canSlide(3)) {
+					p.swap(3, 0);
+					return true;
+				}
+			}
+			
 			float halfWay = mView.getWidth() / 3;
 			float deltaX = (mView.getLeft() - p.getRealLayout().leftMargin);
 			float deltaY = (mView.getTop() - p.getRealLayout().topMargin);
@@ -272,7 +306,7 @@ public class Puzzle {
 			
 			if(mLastDirection == 0 || mLastDirection == 2) {
 				if(Math.abs(deltaX) >= halfWay ) {
-					p.swap(mLastDirection, true);
+					p.swap(mLastDirection, 2);
 					Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 					return true;
 				} else if(Math.abs(deltaX) >= 10) {
@@ -282,7 +316,7 @@ public class Puzzle {
 				}
 			} else {
 				if(Math.abs(deltaY) >= halfWay) {
-					p.swap(mLastDirection, true);
+					p.swap(mLastDirection, 2);
 					Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 					return true;
 				} else if(Math.abs(deltaY) >= 10) { 
@@ -295,7 +329,7 @@ public class Puzzle {
 			Log.d("TouchFinished", "Searching for a tap");
     		for(int i = 0; i<4; i++) {
     			if (p.canSlide(i)){
-    				p.swap(i, false);
+    				p.swap(i, 1);
     				Log.d("TouchFinished", "Sliding in direction:" + i);
     				return true;
     			}

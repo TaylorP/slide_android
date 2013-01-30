@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -153,6 +154,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
     	
+    	  
     	if(pImage == -1) {
     		pImage = mGameState.getImage();
     	} else {

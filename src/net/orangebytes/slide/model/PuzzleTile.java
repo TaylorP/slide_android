@@ -58,7 +58,7 @@ public class PuzzleTile {
 
 		if(totalX >= (mView.getWidth()+6) || totalY >= (mView.getHeight()+6)) {
 			Log.d("Slide", "Too close to edge");
-			swap(pDirection, true);
+			swap(pDirection, 0);
 		    
 			return true;
 		}
@@ -92,13 +92,13 @@ public class PuzzleTile {
 	    mView.setLayoutParams(new LayoutParams(mRealLayout));
 	}
 	
-	public void swap(int pDirection, boolean fast)
+	public void swap(int pDirection, int speed)
 	{
 	    if(mEmptyCell)
 	        return;
 	    
 	    if(mNeighbours[pDirection] != null)
-	        mNeighbours[pDirection].swap(pDirection, fast);
+	        mNeighbours[pDirection].swap(pDirection, speed);
 	    
 	    final PuzzleTile swapDest = mNeighbours[pDirection];
 	    PuzzleTile dstCells[] = new PuzzleTile[4];
@@ -145,13 +145,13 @@ public class PuzzleTile {
 	    final int destX = swapDest.mRealLayout.leftMargin;
 	    final int destY = swapDest.mRealLayout.topMargin;
 	    
-	    if(!fast) {
+	    if(speed != 0) {
 		    TranslateAnimation t = new TranslateAnimation (destX - srcX, 0, destY-srcY, 0);
-		    t.setDuration(100);
+		    t.setDuration(100/speed);
 		    swapDest.mView.startAnimation(t);
 		    
 		    TranslateAnimation t2 = new TranslateAnimation (mView.getLeft()-destX, 0, mView.getTop()-destY, 0);
-		    t2.setDuration(100);
+		    t2.setDuration(100/speed);
 		    mView.startAnimation(t2);
 		  
 		    swapDest.mView.offsetLeftAndRight(srcX-destX);
