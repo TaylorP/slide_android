@@ -33,6 +33,7 @@ public class Puzzle {
 	private PuzzleTile mPuzzleTiles[];
 	
 	private boolean mStopFlag = false;
+	private boolean mSpeedFlag = false;
 	
 	
 	private View  mView;
@@ -73,18 +74,28 @@ public class Puzzle {
 	        	mLastDirection = -1;
 	        	mShuffling = false;
 	        	mPuzzleActive = true;
+	        	mSpeedFlag = false;
 	            return;
 	        }
 	        
-	        mPuzzleTiles[cell].swap(dir, 1);
+	        if(mSpeedFlag) {
+	        	mPuzzleTiles[cell].swap(dir, 0);
+	        } else {
+	        	mPuzzleTiles[cell].swap(dir, 1);
+	        }
 
+	        int time = 110;
+	        if(mSpeedFlag) {
+	        	time = 30;
+	        }
+	        
 	        final Handler handler = new Handler();
 	        handler.postDelayed(new Runnable() {
 	          @Override
 	          public void run() {
 	        	  shufflePuzzle(pGameState);
 	          }
-	        }, 110);
+	        }, time);
 	    }else{
 	    	shufflePuzzle(pGameState);
 	    }
@@ -171,6 +182,11 @@ public class Puzzle {
 	/// Aborts the shuffle
 	public void stopShuffle() {
 		mStopFlag = true;
+	}
+	
+	/// speeds up the shuffle
+	public void speedShuffle() {
+		mSpeedFlag = true;
 	}
 	
 	/// Returns true if the puzzle has been solved

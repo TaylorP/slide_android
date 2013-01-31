@@ -43,6 +43,7 @@ public final class GamePreferences {
     /// The editor instance for modifying preferences
     private Editor mPrefsEditor;
     
+    /// Cache of game stats, so repeated look ups aren't needed
     private Hashtable<String, Integer> mGameStatsCache;
     
     

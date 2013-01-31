@@ -1,7 +1,9 @@
 package net.orangebytes.slide.utils;
 
+/// Utility class for time management
 public class TimeUtils {
 	
+	/// Converts an integer time in seconds to a minutes string
 	public static String intToMinutes(int intTime) {
 		String time;
 		if (intTime < 0) {

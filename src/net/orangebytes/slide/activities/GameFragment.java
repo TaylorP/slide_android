@@ -272,12 +272,16 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			}
 		} else {
 			if(e.getAction() == MotionEvent.ACTION_DOWN) {
-				ImageView v = childAtPosition((int)e.getX(), (int)e.getY());
-				if(v != null) {
-					PuzzleTile p = (PuzzleTile)v.getTag();
-					if(p.isEmpty()) {
-						v.setImageBitmap(null);
-						mPuzzle.shuffle(mGameState);
+				if(mPuzzle.isShuffling()) {
+					mPuzzle.speedShuffle();
+				} else {
+					ImageView v = childAtPosition((int)e.getX(), (int)e.getY());
+					if(v != null) {
+						PuzzleTile p = (PuzzleTile)v.getTag();
+						if(p.isEmpty()) {
+							v.setImageBitmap(null);
+							mPuzzle.shuffle(mGameState);
+						}
 					}
 				}
 			}
