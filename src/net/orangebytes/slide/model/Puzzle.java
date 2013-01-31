@@ -1,6 +1,8 @@
 package net.orangebytes.slide.model;
 
+import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
+import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -24,8 +26,13 @@ public class Puzzle {
 	/// Shuffling mix count
 	private int mMixCount = 0;
 	
+	/// Move count for current puzzle
+	private int mMoveCount = 0;
+	
 	/// The model for the tiles
 	private PuzzleTile mPuzzleTiles[];
+	
+	private boolean mStopFlag = false;
 	
 	
 	private View  mView;
@@ -44,6 +51,10 @@ public class Puzzle {
 	
 	/// Private method for shuffling the puzzle recursively
 	private void shufflePuzzle(final GameState pGameState) {
+		if(mStopFlag) {
+			mStopFlag = false;
+			return;
+		}
 		
 	    int cellCount = mPuzzleTiles.length;
 	    int cell = (int) (Math.random()*(cellCount-1));
@@ -152,12 +163,18 @@ public class Puzzle {
 		mShuffling = true;
 		mLastDirection = -1;
 		mMixCount = 0;
+		mMoveCount = 0;
 		
 		shufflePuzzle(pGameState);
 	}
 	
+	/// Aborts the shuffle
+	public void stopShuffle() {
+		mStopFlag = true;
+	}
+	
 	/// Returns true if the puzzle has been solved
-	public boolean isSolved(GameState pState) {
+	public boolean isSolved(GameState pState, Context pContext) {
 		if(!isActive() && !isShuffling())
 			return false;
 		
@@ -186,6 +203,8 @@ public class Puzzle {
     	}  
     	
     	mPuzzleActive = false;
+    	GamePreferences.get(pContext).saveMoves(mMoveCount, pState.getImageName(), pState.getX(), pState.getY());
+    	
     	return true;
 	}
 	
@@ -267,8 +286,10 @@ public class Puzzle {
 	
 	public boolean touchFinished(float pX, float pY) {
 		Log.d("TouchFinished", "X: " + pX + ", " + "Y: " + pY);
-		if(mBlock)
+		if(mBlock) {
+			mMoveCount++;
 			return true;
+		}
 		
 		if(mView != null) {
 			
@@ -278,12 +299,13 @@ public class Puzzle {
 				if(mMaxDeltaX <= -50) {
 					if(p.canSlide(0)){
 						p.swap(0, 0);
+						mMoveCount++;
 						return true;
 					}
 				} else if(mMaxDeltaX >= 50) {
 					if(p.canSlide(2)) {
 						p.swap(2, 0);
-						
+						mMoveCount++;
 						return true;
 					}
 				}
@@ -291,12 +313,14 @@ public class Puzzle {
 				if(mMaxDeltaY <= -50) {
 					if(p.canSlide(1)) {
 						p.swap(1, 0);
+						mMoveCount++;
 						return true;
 					}
 				}
 				else if(mMaxDeltaY >= 50) {
 					if(p.canSlide(3)) {
 						p.swap(3, 0);
+						mMoveCount++;
 						return true;
 					}
 				}
@@ -309,6 +333,7 @@ public class Puzzle {
 				if(mLastDirection == 0 || mLastDirection == 2) {
 					if(Math.abs(deltaX) >= halfWay ) {
 						p.swap(mLastDirection, 2);
+						mMoveCount++;
 						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 						return true;
 					} else if(Math.abs(deltaX) >= 10) {
@@ -319,6 +344,7 @@ public class Puzzle {
 				} else {
 					if(Math.abs(deltaY) >= halfWay) {
 						p.swap(mLastDirection, 2);
+						mMoveCount++;
 						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 						return true;
 					} else if(Math.abs(deltaY) >= 10) { 
@@ -333,6 +359,7 @@ public class Puzzle {
     		for(int i = 0; i<4; i++) {
     			if (p.canSlide(i)){
     				p.swap(i, 1);
+    				mMoveCount++;
     				Log.d("TouchFinished", "Sliding in direction:" + i);
     				return true;
     			}

@@ -12,12 +12,15 @@ public class GameState {
 	/// The image resource ID
 	private int mImage;
 	
+	/// The image name
+	private String mImageName;
 	
 	/// Constructor, taking sizes, orientation and an image resource
-	public GameState(int pSizeX, int pSizeY, int pImage) {
+	public GameState(int pSizeX, int pSizeY, int pImage, String pImageName) {
 		mSizeX = pSizeX;
 		mSizeY = pSizeY;
 		mImage = pImage;
+		mImageName = pImageName;
 	}
 	
 	/// Returns the x size
@@ -33,6 +36,11 @@ public class GameState {
 	/// Returns the image resource
 	public int getImage() {
 		return mImage;
+	}
+	
+	/// Returns the image name
+	public String getImageName() {
+		return mImageName;
 	}
 	
 	/// Gets the x*y value, the number of tiles in total
@@ -54,5 +62,10 @@ public class GameState {
 	/// Sets the image resource
 	public void setImage(int pImage) {
 		mImage = pImage;
+	}
+	
+	/// Sets the image name
+	public void setImageName(String pImageName) {
+		mImageName = pImageName;
 	}
 }

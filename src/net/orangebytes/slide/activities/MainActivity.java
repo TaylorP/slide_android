@@ -1,6 +1,7 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
+import net.orangebytes.slide.preferences.GameState;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -43,8 +44,8 @@ public class MainActivity extends SlidingFragmentActivity {
 	}
 	
 	/// Sets the puzzle based on an image resource and size
-	public void setPuzzle(int resource, int xSize, int ySize) {
-		mGameFragment.setPuzzle(resource, xSize, ySize);
+	public void setPuzzle(String imageName, int xSize, int ySize) {
+		mGameFragment.setPuzzle(imageName, xSize, ySize);
 	}
 	
 	/// Toggles the sliding menu
@@ -55,6 +56,11 @@ public class MainActivity extends SlidingFragmentActivity {
 	/// Toggle preview
 	public void togglePreview() {
 		mGameFragment.toggleView();
+	}
+	
+	/// Completion call
+	public void onComplete(GameState pGameState) {
+		mOptionsFragment.updateStats(pGameState);
 	}
 	
 	@Override

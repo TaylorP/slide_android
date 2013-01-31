@@ -4,7 +4,9 @@ public class TimeUtils {
 	
 	public static String intToMinutes(int intTime) {
 		String time;
-		if (intTime < 10) {
+		if (intTime < 0) {
+			time = "-:--";
+		} else if (intTime < 10) {
 			time = "0:0" + intTime;
 		}
 		else if (intTime < 60) {

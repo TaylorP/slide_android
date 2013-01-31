@@ -9,8 +9,9 @@ import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TileUtils;
-import android.app.Activity;
+import net.orangebytes.slide.utils.TimeUtils;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Rect;
@@ -33,7 +34,7 @@ import android.widget.ViewFlipper;
 public class GameFragment extends Fragment implements OnTouchListener{
 	
 	/// The activity this fragment is in, used as it's context as well
-	private Activity mActivity;
+	private MainActivity mActivity;
 	
 	/// The layout that will hold the game tiles
 	private RelativeLayout mGameGrid;
@@ -56,12 +57,29 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The views
 	private ImageView mViews[];
 	
+	/// The current time
+	private int mTime = -1;
+	
 	///Runnable to check completion of the puzzle
 	private final Runnable mCompletionCheck = new Runnable() {
 		public void run() {
-			if (mPuzzle.isSolved(mGameState)) {
+			if (mPuzzle.isSolved(mGameState, mActivity)) {
 				mViews[mGameState.getSize() - 1].setImageResource(R.drawable.shuffle);
 				toggleView();
+				GamePreferences.get(mActivity).saveTimes(mTime, mGameState.getImageName(), mGameState.getX(), mGameState.getY());
+				mActivity.onComplete(mGameState);
+				mTime = -1;
+			}
+		}
+	};
+	
+	///Runnable to tick timer
+	private final Runnable mTickTimer = new Runnable() {
+		public void run() {
+			if(mPuzzle.isActive()) {
+				mTime++;
+				mTimeText.setText(TimeUtils.intToMinutes(mTime));
+				tick();
 			}
 		}
 	};
@@ -71,7 +89,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
     /// Creates the view for this fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
     	
-		mActivity = getActivity();
+		mActivity = (MainActivity) getActivity();
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
     	
     	mGameState = GamePreferences.get(mActivity).loadGameState();
@@ -102,7 +120,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
  		   }
  		  });
     	
-    	setPuzzle(mGameState.getImage(), mGameState.getX(), mGameState.getY());
+    	setPuzzle(mGameState.getImageName(), mGameState.getX(), mGameState.getY());
     	
         return root;
     }
@@ -116,7 +134,13 @@ public class GameFragment extends Fragment implements OnTouchListener{
     
 	/// Toggles the view
 	public void toggleView() {
-		AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
+		if(!mPuzzle.isShuffling()) {
+			AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
+			
+			if(!mPuzzle.isActive()) {
+				mTimeText.setText("0:00");
+			}
+		}
 	}
 	
 	/// Gets the child view for a give position
@@ -133,12 +157,20 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	}
 	
 	/// Sets the puzzle, given an image and/or size
-    public void setPuzzle(int pImage, int pSizeX, int pSizeY) {
+    public void setPuzzle(String pImageName, int pSizeX, int pSizeY) {
     	
-    	if(pImage == -1) {
-    		pImage = mGameState.getImage();
+    	if(mPuzzle.isShuffling()) {
+    		mPuzzle.stopShuffle();
+    	}
+    	
+    	int imageRes = -1;
+    	if(pImageName == null) {
+    		imageRes = mGameState.getImage();
     	} else {
-    		mGameState.setImage(pImage);
+	   		Resources res = mActivity.getResources();
+			imageRes = res.getIdentifier(pImageName, "drawable", mActivity.getPackageName());
+    		mGameState.setImage(imageRes);
+    		mGameState.setImageName(pImageName);
     	}
     	
     	if(pSizeX == -1 || pSizeY == -1) {
@@ -148,8 +180,10 @@ public class GameFragment extends Fragment implements OnTouchListener{
     		mGameState.setX(pSizeX);
     		mGameState.setY(pSizeY);
     	}
+    	
+    	mTime = -1;
     
-    	Bitmap image = BitmapFactory.decodeResource(getResources(), pImage);
+    	Bitmap image = BitmapFactory.decodeResource(getResources(), imageRes);
     	
     	int tileSize = TileUtils.getTileSize(mActivity, mGameState); // This is the UI view size
     	int tilePadding = TileUtils.getTilePadding();
@@ -201,10 +235,22 @@ public class GameFragment extends Fragment implements OnTouchListener{
     		toggleView();
     	}
     }
+    
+    private void tick() {
+    	if(mPuzzle.isActive()) {
+    		Handler h = new Handler();
+    		h.postDelayed(mTickTimer, 1000);
+    	}
+    }
 
 	@Override
     public boolean onTouch(View view, MotionEvent e) {
 		if(mPuzzle.isActive()) {
+			if(mTime == -1) {
+				mTime = 0;
+				tick();
+			}
+			
 			if(e.getAction() == MotionEvent.ACTION_DOWN) {
 				View v = childAtPosition((int)e.getX(), (int)e.getY());
 				if(v != null) {

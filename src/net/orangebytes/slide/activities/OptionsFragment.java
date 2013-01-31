@@ -3,11 +3,12 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.adapters.OptionsListAdapter;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.preferences.GamePreferences;
+import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
 import android.app.Activity;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -49,6 +50,9 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	private TextSwitcher mSwitcher;
 
 	/// The last selected position
+	private int mLastPosition;
+	
+	/// The last selected view
 	private View mLastSelected = null;
 	
 	/// The puzzle name text
@@ -72,15 +76,15 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mActivity = getActivity();
 		
 		mValues = new PuzzleInfo[] {
-				new PuzzleInfo("beach", "beach_thumb", 10, 20),
-				new PuzzleInfo("bird", "bird_thumb", 20, 30),
-				new PuzzleInfo("bug", "bug_thumb", 122, 30),
-				new PuzzleInfo("canyon", "canyon_thumb", 45, 30),
-				new PuzzleInfo("chess", "chess_thumb", 45, 30),
-				new PuzzleInfo("flower", "flower_thumb", 45, 32),
-				new PuzzleInfo("fruit", "fruit_thumb", 15, 20),
-				new PuzzleInfo("leaf", "leaf_thumb", 15, 20),
-				new PuzzleInfo("peach", "peach_thumb", 15, 20) };
+				new PuzzleInfo("beach", "beach_thumb"),
+				new PuzzleInfo("bird", "bird_thumb"),
+				new PuzzleInfo("bug", "bug_thumb"),
+				new PuzzleInfo("canyon", "canyon_thumb"),
+				new PuzzleInfo("chess", "chess_thumb"),
+				new PuzzleInfo("flower", "flower_thumb"),
+				new PuzzleInfo("fruit", "fruit_thumb"),
+				new PuzzleInfo("leaf", "leaf_thumb"),
+				new PuzzleInfo("peach", "peach_thumb") };
 
 		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
 		
@@ -89,11 +93,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mOptionsList.setOnItemClickListener(new OnItemClickListener() {
 		       @SuppressLint("NewApi")
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
 		    	   
-			   		Resources res = mActivity.getResources();
-					int resID = res.getIdentifier(mValues[position].getTitle(), "drawable", mActivity.getPackageName());
-					((MainActivity)mActivity).setPuzzle(resID, -1, -1);
+					((MainActivity)mActivity).setPuzzle(mValues[position].getTitle(), -1, -1);
 					
 		    	   if(mLastSelected != null) {
 		    		    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
@@ -102,34 +103,29 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		    		    mLastSelected.startAnimation(aa);
 		    	   }
 		    	   
+		    	   mLastPosition = position;
 		    	   mLastSelected = view;
 	    		   AlphaAnimation aa = new AlphaAnimation(0.3f,0.8f);
 	    		   aa.setDuration(10);
 	    		   aa.setFillAfter(true);
 	    		   view.startAnimation(aa);
-	    		   PuzzleInfo p = ((OptionsListAdapter)mOptionsList.getAdapter()).getInfo(position);
+
 	    		   if(mPuzzleName != null) { 
-	    			   mPuzzleName.setText(p.getTitle());
-	    			   mBestTime.setText(TimeUtils.intToMinutes(p.getTime()));
-	    			   mBestMoves.setText(p.getMoves()+"");
+	    			   GameState g = GamePreferences.get(mActivity).loadGameState();
+	    			   updateStats(g);
 	    		   }
 	    		    
-		    	   if (android.os.Build.VERSION.SDK_INT >= 11)
-		    	   {
+		    	   if (android.os.Build.VERSION.SDK_INT >= 11){
 		    		   mOptionsList.smoothScrollToPositionFromTop(position, 0);
-
-		    	   }
-		    	   else if (android.os.Build.VERSION.SDK_INT >= 8)
-		    	   {
+		    	   }else if (android.os.Build.VERSION.SDK_INT >= 8){
 		    	       int firstVisible = mOptionsList.getFirstVisiblePosition();
 		    	       int lastVisible = mOptionsList.getLastVisiblePosition();
-		    	       if (position < firstVisible)
+		    	       if (position < firstVisible) {
 		    	    	   mOptionsList.smoothScrollToPosition(position);
-		    	       else
+		    	       }else{
 		    	    	   mOptionsList.smoothScrollToPosition(position + lastVisible - firstVisible - 2);
-		    	   }
-		    	   else
-		    	   {
+		    	       }
+		    	   }else{
 		    		   mOptionsList.setSelectionFromTop(position, 0);
 		    	   }
 		       }
@@ -164,7 +160,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				int xSize = p.x;
 				int ySize = p.y;
 
-				((MainActivity)mActivity).setPuzzle(-1, xSize, ySize);				
+				((MainActivity)mActivity).setPuzzle(null, xSize, ySize);				
 			}
 
 			@Override
@@ -201,5 +197,19 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		t.setTextColor(Color.parseColor("#BBBBBB"));
 		t.setTypeface(Typeface.createFromAsset(mActivity.getAssets(),"Roboto-Light.ttf"));
 		return t;
+	}
+	
+	public void updateStats(GameState pGameState) {
+		String title = mValues[mLastPosition].getTitle();
+		
+		int x = pGameState.getX();
+		int y = pGameState.getY();
+		
+		int moves = GamePreferences.get(mActivity).loadMoves(title, x, y);
+		int times = GamePreferences.get(mActivity).loadTimes(title, x, y);
+		   
+		mPuzzleName.setText(title);
+		mBestTime.setText(TimeUtils.intToMinutes(times));
+		mBestMoves.setText(moves > 0 ? (moves+"") : "-");
 	}
 }

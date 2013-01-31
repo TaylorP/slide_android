@@ -68,7 +68,6 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		convertView.setFocusable(false);
 		convertView.setClickable(false);
 
-
 	    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
 	    aa.setDuration(10);
 	    aa.setFillAfter(true);
