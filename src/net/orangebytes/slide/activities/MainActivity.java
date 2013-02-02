@@ -1,7 +1,9 @@
 package net.orangebytes.slide.activities;
 
 import net.orangebytes.slide.R;
+import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
 import android.view.KeyEvent;
@@ -12,19 +14,28 @@ import com.slidingmenu.lib.app.SlidingFragmentActivity;
 /// The main activity for the app, containing either two fragments in seperate panels or a sliding menu
 public class MainActivity extends SlidingFragmentActivity {
 
+	/// The game fragment
 	private GameFragment mGameFragment;
+	
+	/// The options fragment
 	private OptionsFragment mOptionsFragment;
+	
+	/// The shared game state
+	private GameState mGameState;
 	
 	@Override
 	/// Creates the Activity
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.game_frame);
         setBehindContentView(R.layout.options_frame);
         
 		mGameFragment = new GameFragment();
 		mOptionsFragment = new OptionsFragment();
+		
+		mGameState = GamePreferences.get(this).loadGameState();
 		
 		FragmentTransaction t1 = this.getSupportFragmentManager().beginTransaction();
 		t1.replace(R.id.game_frame, mGameFragment);
@@ -43,6 +54,13 @@ public class MainActivity extends SlidingFragmentActivity {
 		sm.setFadeDegree(0.35f);
 	}
 	
+	@Override
+	///Called when the activity pauses - use this to store the game state
+	public void onPause () {
+		super.onPause();
+		GamePreferences.get(this).storeGameState(mGameState);
+	}
+	
 	/// Sets the puzzle based on an image resource and size
 	public void setPuzzle(String imageName, int xSize, int ySize) {
 		mGameFragment.setPuzzle(imageName, xSize, ySize);
@@ -55,7 +73,11 @@ public class MainActivity extends SlidingFragmentActivity {
 	
 	/// Toggle preview
 	public void togglePreview() {
-		mGameFragment.toggleView();
+		if(mGameFragment.toggleView()) {
+			if(getSlidingMenu().isMenuShowing()) {
+				toggleOptions();
+			}
+		}
 	}
 	
 	/// Completion call
@@ -74,5 +96,10 @@ public class MainActivity extends SlidingFragmentActivity {
 	    	return true;
 	    }
 	    return super.onKeyDown(keyCode, event);
+	}
+	
+	/// Returns the current game state
+	public GameState getGameState() {
+		return mGameState;
 	}
 }

@@ -13,22 +13,21 @@
 	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
-	    android:orientation="horizontal"
+	    android:orientation="vertical"
 	    android:paddingBottom="5dp">
 	    
     	<TextSwitcher
     	    android:id = "@+id/grid_size"
-	        android:layout_width="0dp"
-	        android:layout_weight="1"
-	        android:layout_height="match_parent"
-	      	android:paddingLeft="10dp"
-	    	android:paddingRight="0dp"/>
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:gravity = "center"
+	        android:layout_gravity = "center"
+	        android:padding = "5dp"/>
     
 	    <SeekBar
 	        android:id="@+id/game_size_bar"
-	        android:layout_width="0dp"
-	        android:layout_weight="2"
-	        android:layout_height="match_parent"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
 	        android:max="4"
 	        android:progress="2"/>
     </LinearLayout>

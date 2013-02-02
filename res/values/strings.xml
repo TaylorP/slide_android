@@ -6,6 +6,6 @@
     <string name="menu_settings">Settings</string>
     <string name="best_time">best time</string>
     <string name="best_move">best moves</string>
-    <string name="grid_size">size</string>
+    <string name="grid_size">grid size</string>
 
 </resources>

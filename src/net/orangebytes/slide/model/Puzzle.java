@@ -182,6 +182,7 @@ public class Puzzle {
 	/// Aborts the shuffle
 	public void stopShuffle() {
 		mStopFlag = true;
+		mShuffling = false;
 	}
 	
 	/// speeds up the shuffle

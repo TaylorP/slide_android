@@ -6,10 +6,10 @@ import net.orangebytes.slide.animation.AnimationFactory.FlipDirection;
 import net.orangebytes.slide.model.Puzzle;
 import net.orangebytes.slide.model.PuzzleTile;
 import net.orangebytes.slide.preferences.GamePreferences;
-import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TileUtils;
 import net.orangebytes.slide.utils.TimeUtils;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -48,9 +48,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The preview image
 	private ImageView mPreview;
 	
-	/// The current game state
-	private GameState mGameState;
-	
 	/// The current puzzle
 	private Puzzle mPuzzle;
 	
@@ -60,14 +57,22 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// The current time
 	private int mTime = -1;
 	
+	/// The flip button
+	private ImageView mFlipButton;
+	
 	///Runnable to check completion of the puzzle
 	private final Runnable mCompletionCheck = new Runnable() {
 		public void run() {
-			if (mPuzzle.isSolved(mGameState, mActivity)) {
-				mViews[mGameState.getSize() - 1].setImageResource(R.drawable.shuffle);
+			if (mPuzzle.isSolved(mActivity.getGameState(), mActivity)) {
+				mViews[mActivity.getGameState().getSize() - 1].setImageResource(R.drawable.shuffle);
 				toggleView();
-				GamePreferences.get(mActivity).saveTimes(mTime, mGameState.getImageName(), mGameState.getX(), mGameState.getY());
-				mActivity.onComplete(mGameState);
+				
+				GamePreferences.get(mActivity).saveTimes(mTime, 
+						mActivity.getGameState().getImageName(), 
+						mActivity.getGameState().getX(), 
+						mActivity.getGameState().getY());
+				
+				mActivity.onComplete(mActivity.getGameState());
 				mTime = -1;
 			}
 		}
@@ -92,7 +97,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
 		mActivity = (MainActivity) getActivity();
     	View root = inflater.inflate(R.layout.game_fragment, container, false);
     	
-    	mGameState = GamePreferences.get(mActivity).loadGameState();
     	mPuzzle = Puzzle.get();
     	
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
@@ -111,36 +115,41 @@ public class GameFragment extends Fragment implements OnTouchListener{
     		   }
     		  });
     	
-    	ImageView i = (ImageView)root.findViewById(R.id.flip_button);
-    	i.setClickable(true);
-    	i.setOnClickListener(new OnClickListener() {
+    	mFlipButton = (ImageView)root.findViewById(R.id.flip_button);
+    	mFlipButton.setClickable(true);
+    	mFlipButton.setOnClickListener(new OnClickListener() {
  		   @Override
  		   public void onClick(View v) {
  		      ((MainActivity)mActivity).togglePreview();
  		   }
  		  });
     	
-    	setPuzzle(mGameState.getImageName(), mGameState.getX(), mGameState.getY());
+    	setPuzzle(mActivity.getGameState().getImageName(),
+    			mActivity.getGameState().getX(), 
+    			mActivity.getGameState().getY());
     	
         return root;
     }
-	
-	@Override
-	///Called when the activity pauses - use this to store the game state
-	public void onPause () {
-		super.onPause();
-		GamePreferences.get(mActivity).storeGameState(mGameState);
-	}
     
 	/// Toggles the view
-	public void toggleView() {
+	public boolean toggleView() {
 		if(!mPuzzle.isShuffling()) {
-			AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
+			if(mFlipper.getDisplayedChild() == 0) {
+				mFlipButton.setImageResource(R.drawable.grid);
+			} else {
+				mFlipButton.setImageResource(R.drawable.picture);
+			}
 			
+			AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
+
 			if(!mPuzzle.isActive()) {
 				mTimeText.setText("0:00");
 			}
+			
+			return true;
 		}
+		
+		return false;
 	}
 	
 	/// Gets the child view for a give position
@@ -165,47 +174,47 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	
     	int imageRes = -1;
     	if(pImageName == null) {
-    		imageRes = mGameState.getImage();
+    		imageRes = mActivity.getGameState().getImage();
     	} else {
 	   		Resources res = mActivity.getResources();
 			imageRes = res.getIdentifier(pImageName, "drawable", mActivity.getPackageName());
-    		mGameState.setImage(imageRes);
-    		mGameState.setImageName(pImageName);
+			mActivity.getGameState().setImage(imageRes);
+			mActivity.getGameState().setImageName(pImageName);
     	}
     	
     	if(pSizeX == -1 || pSizeY == -1) {
-    		pSizeX = mGameState.getX();
-    		pSizeY = mGameState.getY();
+    		pSizeX = mActivity.getGameState().getX();
+    		pSizeY = mActivity.getGameState().getY();
     	} else {
-    		mGameState.setX(pSizeX);
-    		mGameState.setY(pSizeY);
+    		mActivity.getGameState().setX(pSizeX);
+    		mActivity.getGameState().setY(pSizeY);
     	}
     	
     	mTime = -1;
     
     	Bitmap image = BitmapFactory.decodeResource(getResources(), imageRes);
     	
-    	int tileSize = TileUtils.getTileSize(mActivity, mGameState); // This is the UI view size
+    	int tileSize = TileUtils.getTileSize(mActivity, mActivity.getGameState()); // This is the UI view size
     	int tilePadding = TileUtils.getTilePadding();
-    	int tileScale = TileUtils.getTileScale(image, mGameState, getResources()); // This is the actual image size
+    	int tileScale = TileUtils.getTileScale(image, mActivity.getGameState(), getResources()); // This is the actual image size
     	
-    	int gridWidth = (tileSize + tilePadding)* mGameState.getX();
-    	int gridHeight = (tileSize + tilePadding)* mGameState.getY();
+    	int gridWidth = (tileSize + tilePadding)* mActivity.getGameState().getX();
+    	int gridHeight = (tileSize + tilePadding)* mActivity.getGameState().getY();
     	
-    	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mGameState.getX(),tileScale*mGameState.getY()));
+    	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mActivity.getGameState().getX(),tileScale*mActivity.getGameState().getY()));
     	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(gridWidth, gridHeight);
     	mPreview.setLayoutParams(params);
     	
     	mGameGrid.removeAllViews();
     	mGameGrid.setLayoutParams(new RelativeLayout.LayoutParams(gridWidth, gridHeight));
     	mGameGrid.setOnTouchListener(this);
-    	mViews = new ImageView[mGameState.getSize()];
+    	mViews = new ImageView[mActivity.getGameState().getSize()];
     	
     	LayoutInflater viewInflator = (LayoutInflater)mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
     	int count = 0;
-    	for(int i = 0; i < mGameState.getX(); i++){
-    		for(int j = 0; j< mGameState.getY(); j++){
+    	for(int i = 0; i < mActivity.getGameState().getX(); i++){
+    		for(int j = 0; j< mActivity.getGameState().getY(); j++){
     	    	int xPos = (tileSize + tilePadding) * i;
     	    	int yPos = (tileSize + tilePadding) * j;
     	    	
@@ -215,7 +224,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	    	ImageView tile = (ImageView)viewInflator.inflate(R.layout.puzzle_tile, null);
     	    	tile.setLayoutParams(tileLayout);
     	    	
-    	    	if(count == mGameState.getSize()-1) {;
+    	    	if(count == mActivity.getGameState().getSize()-1) {;
     	    		tile.setBackgroundColor(getResources().getColor(R.color.clear));
     	    		tile.setImageResource(R.drawable.shuffle);
     	    	} else {
@@ -228,8 +237,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	    	count++;
     		}
     	}
-    	mPuzzle.generateLinks(mGameState);
-    	mPuzzle.linkPuzzle(mGameState, mViews);
+    	mPuzzle.generateLinks(mActivity.getGameState());
+    	mPuzzle.linkPuzzle(mActivity.getGameState(), mViews);
     	
     	if(mFlipper.getDisplayedChild() == 1) {
     		toggleView();
@@ -280,7 +289,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 						PuzzleTile p = (PuzzleTile)v.getTag();
 						if(p.isEmpty()) {
 							v.setImageBitmap(null);
-							mPuzzle.shuffle(mGameState);
+							mPuzzle.shuffle(mActivity.getGameState());
 						}
 					}
 				}

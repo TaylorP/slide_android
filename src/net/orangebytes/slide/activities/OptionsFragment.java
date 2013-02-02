@@ -8,7 +8,6 @@ import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -35,7 +34,7 @@ import android.widget.ViewSwitcher;
 public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactory {
 
 	/// The activity this fragment is in, used as it's context as well
-	private Activity mActivity;
+	private MainActivity mActivity;
 	
 	/// The options list, containing the available puzzles and some settings
 	private ListView mOptionsList;
@@ -50,7 +49,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	private TextSwitcher mSwitcher;
 
 	/// The last selected position
-	private int mLastPosition;
+	private int mLastPosition = -1;
 	
 	/// The last selected view
 	private View mLastSelected = null;
@@ -73,7 +72,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mBestTime = (TextView)root.findViewById(R.id.puzzle_time);
 		mBestMoves = (TextView)root.findViewById(R.id.puzzle_moves);
 		
-		mActivity = getActivity();
+		mActivity = (MainActivity) getActivity();
 		
 		mValues = new PuzzleInfo[] {
 				new PuzzleInfo("beach", "beach_thumb"),
@@ -111,8 +110,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	    		   view.startAnimation(aa);
 
 	    		   if(mPuzzleName != null) { 
-	    			   GameState g = GamePreferences.get(mActivity).loadGameState();
-	    			   updateStats(g);
+	    			   updateStats(mActivity.getGameState());
 	    		   }
 	    		    
 		    	   if (android.os.Build.VERSION.SDK_INT >= 11){
@@ -160,7 +158,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				int xSize = p.x;
 				int ySize = p.y;
 
-				((MainActivity)mActivity).setPuzzle(null, xSize, ySize);				
+				((MainActivity)mActivity).setPuzzle(null, xSize, ySize);
+				updateStats(mActivity.getGameState());
 			}
 
 			@Override
@@ -183,6 +182,8 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 			}
 		});
 
+		updateStats(mActivity.getGameState());
+		
 		return root;
 	}
 
@@ -200,6 +201,14 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	}
 	
 	public void updateStats(GameState pGameState) {
+		if(mLastPosition == -1 ) {
+			for(int i = 0; i<mValues.length; i++) {
+				if(mValues[i].getTitle().equals(pGameState.getImageName())) {
+					mLastPosition = i;
+					mOptionsList.setSelectionFromTop(i, 0);
+				}
+			}
+		}
 		String title = mValues[mLastPosition].getTitle();
 		
 		int x = pGameState.getX();
