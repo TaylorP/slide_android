@@ -141,10 +141,6 @@ public class GameFragment extends Fragment implements OnTouchListener{
 			}
 			
 			AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
-
-			if(!mPuzzle.isActive()) {
-				mTimeText.setText("0:00");
-			}
 			
 			return true;
 		}
