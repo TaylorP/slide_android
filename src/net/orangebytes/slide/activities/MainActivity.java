@@ -3,6 +3,7 @@ package net.orangebytes.slide.activities;
 import net.orangebytes.slide.R;
 import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
+import net.orangebytes.slide.utils.Sounds;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.FragmentTransaction;
@@ -52,6 +53,8 @@ public class MainActivity extends SlidingFragmentActivity {
 		sm.setShadowDrawable(R.drawable.slide_shadow);
 		sm.setBehindScrollScale(0.0f);
 		sm.setFadeDegree(0.35f);
+		
+		Sounds.get(this);
 	}
 	
 	@Override

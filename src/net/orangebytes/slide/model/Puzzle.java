@@ -1,7 +1,9 @@
 package net.orangebytes.slide.model;
 
+import net.orangebytes.slide.activities.GameFragment;
 import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
+import net.orangebytes.slide.utils.Sounds;
 import android.content.Context;
 import android.os.Handler;
 import android.util.Log;
@@ -51,7 +53,7 @@ public class Puzzle {
 	}
 	
 	/// Private method for shuffling the puzzle recursively
-	private void shufflePuzzle(final GameState pGameState) {
+	private void shufflePuzzle(final GameState pGameState, final GameFragment pFragment) {
 		if(mStopFlag) {
 			mStopFlag = false;
 			return;
@@ -75,6 +77,7 @@ public class Puzzle {
 	        	mShuffling = false;
 	        	mPuzzleActive = true;
 	        	mSpeedFlag = false;
+	        	pFragment.doneShuffle();
 	            return;
 	        }
 	        
@@ -93,11 +96,11 @@ public class Puzzle {
 	        handler.postDelayed(new Runnable() {
 	          @Override
 	          public void run() {
-	        	  shufflePuzzle(pGameState);
+	        	  shufflePuzzle(pGameState, pFragment);
 	          }
 	        }, time);
 	    }else{
-	    	shufflePuzzle(pGameState);
+	    	shufflePuzzle(pGameState, pFragment);
 	    }
 	}
 	
@@ -170,13 +173,13 @@ public class Puzzle {
 	}
 
 	/// Shuffles a puzzle for a given game state
-	public void shuffle(GameState pGameState) {
+	public void shuffle(GameState pGameState, GameFragment pFragment) {
 		mShuffling = true;
 		mLastDirection = -1;
 		mMixCount = 0;
 		mMoveCount = 0;
 		
-		shufflePuzzle(pGameState);
+		shufflePuzzle(pGameState, pFragment);
 	}
 	
 	/// Aborts the shuffle
@@ -226,7 +229,7 @@ public class Puzzle {
 	}
 	
 	
-	public void touchDown(View pView, float pX, float pY) {
+	public void touchDown(View pView, float pX, float pY, Context pContext) {
 		mSliding = false;
 		mView = pView;
 		mLastX = pX;
@@ -238,7 +241,7 @@ public class Puzzle {
 		Log.d("TouchDown", "Sliding: " + mSliding + ", X: " + pX + ", " + pY);
 	}
 	
-	public void touchMove(float pX, float pY) {
+	public void touchMove(float pX, float pY, Context pContext) {
 		Log.d("TouchMove", "X: " + pX + ", " + "Y: " + pY);
 		
 		if(mView != null && !mBlock) {
@@ -298,10 +301,14 @@ public class Puzzle {
 					return;
 				}
 			}
+			
+			if(mBlock) {
+				Sounds.get(pContext).playSound(pContext);
+			}
 		}
 	}
 	
-	public boolean touchFinished(float pX, float pY) {
+	public boolean touchFinished(float pX, float pY, Context pContext) {
 		Log.d("TouchFinished", "X: " + pX + ", " + "Y: " + pY);
 		if(mBlock) {
 			mMoveCount++;
@@ -317,12 +324,14 @@ public class Puzzle {
 					if(p.canSlide(0)){
 						p.swap(0, 0);
 						mMoveCount++;
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					}
 				} else if(mMaxDeltaX >= 50) {
 					if(p.canSlide(2)) {
 						p.swap(2, 0);
 						mMoveCount++;
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					}
 				}
@@ -331,6 +340,7 @@ public class Puzzle {
 					if(p.canSlide(1)) {
 						p.swap(1, 0);
 						mMoveCount++;
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					}
 				}
@@ -338,6 +348,7 @@ public class Puzzle {
 					if(p.canSlide(3)) {
 						p.swap(3, 0);
 						mMoveCount++;
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					}
 				}
@@ -352,10 +363,12 @@ public class Puzzle {
 						p.swap(mLastDirection, 2);
 						mMoveCount++;
 						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					} else if(Math.abs(deltaX) >= 10) {
 						p.unslide(mLastDirection);
 						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
+						Sounds.get(pContext).playSound(pContext);
 						return false;
 					}
 				} else {
@@ -363,10 +376,12 @@ public class Puzzle {
 						p.swap(mLastDirection, 2);
 						mMoveCount++;
 						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
+						Sounds.get(pContext).playSound(pContext);
 						return true;
 					} else if(Math.abs(deltaY) >= 10) { 
 						p.unslide(mLastDirection);
 						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
+						Sounds.get(pContext).playSound(pContext);
 						return false;
 					}
 				}
@@ -378,6 +393,7 @@ public class Puzzle {
     				p.swap(i, 1);
     				mMoveCount++;
     				Log.d("TouchFinished", "Sliding in direction:" + i);
+    				Sounds.get(pContext).playSound(pContext);
     				return true;
     			}
     		}

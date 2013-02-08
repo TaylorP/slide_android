@@ -9,7 +9,6 @@ import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.utils.FontUtils;
 import net.orangebytes.slide.utils.TileUtils;
 import net.orangebytes.slide.utils.TimeUtils;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -81,7 +80,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	///Runnable to tick timer
 	private final Runnable mTickTimer = new Runnable() {
 		public void run() {
-			if(mPuzzle.isActive()) {
+			if(mPuzzle.isActive() && !mStopFlag) {
 				mTime++;
 				mTimeText.setText(TimeUtils.intToMinutes(mTime));
 				tick();
@@ -89,6 +88,23 @@ public class GameFragment extends Fragment implements OnTouchListener{
 		}
 	};
 	
+	private boolean mStopFlag = false;
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		mStopFlag = true;
+	}
+	
+	@Override
+	public void onResume() {
+		super.onResume();
+		mStopFlag = false;
+		
+		if(mPuzzle.isActive()) {
+			tick();
+		}
+	}
 	
 	@Override
     /// Creates the view for this fragment
@@ -145,6 +161,9 @@ public class GameFragment extends Fragment implements OnTouchListener{
 				mFlipButton.setImageResource(R.drawable.grid);
 			} else {
 				mFlipButton.setImageResource(R.drawable.picture);
+				if(!mPuzzle.isActive()) {
+					mTimeText.setText("0:00");
+				}
 			}
 			
 			AnimationFactory.flipTransition(mFlipper, FlipDirection.RIGHT_LEFT);
@@ -170,6 +189,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	
 	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(String pImageName, int pSizeX, int pSizeY) {
+    	
+    	mTimeText.setText("0:00");
     	
     	if(mPuzzle.isShuffling()) {
     		mPuzzle.stopShuffle();
@@ -254,28 +275,28 @@ public class GameFragment extends Fragment implements OnTouchListener{
     		h.postDelayed(mTickTimer, 1000);
     	}
     }
+    
+    public void doneShuffle() {
+		mTime = 0;
+		tick();
+    }
 
 	@Override
     public boolean onTouch(View view, MotionEvent e) {
 		if(mPuzzle.isActive()) {
-			if(mTime == -1) {
-				mTime = 0;
-				tick();
-			}
-			
 			if(e.getAction() == MotionEvent.ACTION_DOWN) {
 				View v = childAtPosition((int)e.getX(), (int)e.getY());
 				if(v != null) {
-					mPuzzle.touchDown(v, e.getX(), e.getY());
+					mPuzzle.touchDown(v, e.getX(), e.getY(), mActivity);
 				}
 				return true;
 				
 			} else if (e.getAction() == MotionEvent.ACTION_MOVE) {
-				mPuzzle.touchMove(e.getX(), e.getY());
+				mPuzzle.touchMove(e.getX(), e.getY(), mActivity);
 				return true;
 				
 			} else if(e.getAction() == MotionEvent.ACTION_UP) {
-				if(mPuzzle.touchFinished(e.getX(), e.getY())) {
+				if(mPuzzle.touchFinished(e.getX(), e.getY(), mActivity)) {
 					final Handler handler = new Handler();
 					handler.postDelayed(mCompletionCheck,150);
 					return true;
@@ -292,7 +313,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
 						PuzzleTile p = (PuzzleTile)v.getTag();
 						if(p.isEmpty()) {
 							v.setImageBitmap(null);
-							mPuzzle.shuffle(mActivity.getGameState());
+							mPuzzle.shuffle(mActivity.getGameState(), this);
 						}
 					}
 				}
