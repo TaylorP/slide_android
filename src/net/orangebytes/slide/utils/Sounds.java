@@ -36,7 +36,7 @@ public class Sounds {
 	      float volume = actualVolume / maxVolume;
 	      
 	      if (mLoaded >= 3) {
-	        mSoundPool.play((int)(Math.random()*3), volume, volume, 1, 0, 1f);
+	        mSoundPool.play(mSounds[(int)(Math.random()*3)], volume, volume, 1, 0, 1f);
 	      }
 	}
 	
