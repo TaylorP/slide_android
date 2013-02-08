@@ -86,6 +86,8 @@ public class Puzzle {
 	        } else {
 	        	mPuzzleTiles[cell].swap(dir, 1);
 	        }
+	        
+	        Sounds.get(pFragment.getActivity()).playSound(pFragment.getActivity());
 
 	        int time = 110;
 	        if(mSpeedFlag) {
@@ -267,7 +269,9 @@ public class Puzzle {
 					mLastDirection = 0;
 					mMaxDeltaX=Math.min(deltaX, mMaxDeltaX);
 					mBlock = p.slide(0, (int) deltaX);
-					
+					if(mBlock) {
+						Sounds.get(pContext).playSound(pContext);
+					}
 					return;
 				}
 			} else {
@@ -276,7 +280,9 @@ public class Puzzle {
 					mLastDirection = 2;
 					mMaxDeltaX=Math.max(deltaX, mMaxDeltaX);
 					mBlock = p.slide(2, (int) deltaX);
-					
+					if(mBlock) {
+						Sounds.get(pContext).playSound(pContext);
+					}
 					return;
 				}
 			}
@@ -287,7 +293,9 @@ public class Puzzle {
 					mLastDirection = 1;
 					mMaxDeltaY=Math.min(deltaY, mMaxDeltaY);
 					mBlock = p.slide(1, (int) deltaY);
-					
+					if(mBlock) {
+						Sounds.get(pContext).playSound(pContext);
+					}	
 					return;
 				}
 			}
@@ -297,13 +305,11 @@ public class Puzzle {
 					mLastDirection = 3;
 					mMaxDeltaY=Math.max(deltaY, mMaxDeltaY);
 					mBlock = p.slide(3, (int) deltaY);
-					
+					if(mBlock) {
+						Sounds.get(pContext).playSound(pContext);
+					}		
 					return;
 				}
-			}
-			
-			if(mBlock) {
-				Sounds.get(pContext).playSound(pContext);
 			}
 		}
 	}
