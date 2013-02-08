@@ -102,6 +102,13 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	mGameGrid = (RelativeLayout) root.findViewById(R.id.game_grid);
     	mFlipper  = (ViewFlipper) root.findViewById(R.id.game_flipper);
         mPreview  = (ImageView) root.findViewById(R.id.preview_image);
+        mPreview.setOnClickListener(new OnClickListener() {
+    		   @Override
+    		   public void onClick(View v) {
+    		      toggleView();
+    		   }
+    		  });
+        
     	mTimeText = (TextView) root.findViewById(R.id.time_text);
     	
     	mTimeText.setTypeface(FontUtils.getRobotoLight(getActivity()));
