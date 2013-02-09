@@ -6,7 +6,8 @@
     android:layout_height="fill_parent"
     android:padding="2dp"
     android:gravity = "center"
-    android:clickable="true">
+    android:clickable="true"
+    android:background="#FFFFFFFF">
     
 	<include
    		android:id="@+id/puzzle_thumb"

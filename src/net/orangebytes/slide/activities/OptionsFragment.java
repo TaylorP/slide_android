@@ -17,7 +17,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -93,21 +92,17 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		       @SuppressLint("NewApi")
 			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 		    	   
-					((MainActivity)mActivity).setPuzzle(mValues[position].getTitle(), -1, -1);
+		    	   ((MainActivity)mActivity).setPuzzle(mValues[position].getTitle(), -1, -1);
 					
 		    	   if(mLastSelected != null) {
-		    		    AlphaAnimation aa = new AlphaAnimation(0.3f,0.3f);
-		    		    aa.setDuration(10);
-		    		    aa.setFillAfter(true);
-		    		    mLastSelected.startAnimation(aa);
+		    		    mLastSelected.getBackground().setAlpha(0);
 		    	   }
 		    	   
 		    	   mLastPosition = position;
+		    	   mOptionsAdapter.setSelected(position);
 		    	   mLastSelected = view;
-	    		   AlphaAnimation aa = new AlphaAnimation(0.3f,0.8f);
-	    		   aa.setDuration(10);
-	    		   aa.setFillAfter(true);
-	    		   view.startAnimation(aa);
+			   	   view.getBackground().setAlpha(60);
+
 
 	    		   if(mPuzzleName != null) { 
 	    			   updateStats(mActivity.getGameState());
@@ -181,7 +176,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				mSwitcher.setText(p.x+"x"+p.y);
 			}
 		});
-
+		
 		updateStats(mActivity.getGameState());
 		
 		return root;
@@ -206,6 +201,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				if(mValues[i].getTitle().equals(pGameState.getImageName())) {
 					mLastPosition = i;
 					mOptionsList.setSelectionFromTop(i, 0);
+					mOptionsAdapter.setSelected(i);
 				}
 			}
 		}
@@ -220,5 +216,11 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mPuzzleName.setText(title);
 		mBestTime.setText(TimeUtils.intToMinutes(times));
 		mBestMoves.setText(moves > 0 ? (moves+"") : "-");
+	}
+	
+	public void scrollToSelected() {
+		if(mLastPosition >=0 ) {
+			mOptionsList.setSelectionFromTop(mLastPosition, 0);
+		}
 	}
 }

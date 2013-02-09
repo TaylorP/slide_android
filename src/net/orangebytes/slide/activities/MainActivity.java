@@ -72,6 +72,7 @@ public class MainActivity extends SlidingFragmentActivity {
 	/// Toggles the sliding menu
 	public void toggleOptions() {
 		getSlidingMenu().toggle(true);
+		mOptionsFragment.scrollToSelected();
 	}
 	
 	/// Toggle preview
