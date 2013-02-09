@@ -36,6 +36,12 @@ public final class GamePreferences {
 	/// The game moves array key
 	private static final String sGameMoves = "GAME_MOVES_";
 	
+	/// The sound preference key
+	private static final String sSoundsKey = "SOUNDS";
+	
+	/// the music preference key
+	private static final String sMusicKey = "MUSIC";
+	
 	
 	/// The shared preferences instance, containing user settings
     private SharedPreferences mSharedPrefs;
@@ -84,6 +90,27 @@ public final class GamePreferences {
 					.putString(sImageNameKey, pState.getImageName());
 		mPrefsEditor.commit();
 	}
+	
+	/// Loads the current sounds prefence and returns it
+	public boolean getSoundsPreference() {
+		return mSharedPrefs.getBoolean(sSoundsKey, true);
+	}
+	
+	/// Stores the current sounds preference
+	public void setSoundsPreference(boolean pSound) {
+		mPrefsEditor.putBoolean(sSoundsKey, pSound).commit();
+	}
+	
+	/// Loads the current music prefence and returns it
+	public boolean getMusicPreference() {
+		return mSharedPrefs.getBoolean(sMusicKey, true);
+	}
+	
+	/// Stores the current music preference
+	public void setMusicPreference(boolean pMusic) {
+		mPrefsEditor.putBoolean(sMusicKey, pMusic).commit();
+	}
+	
 	
 	/// Loads the game times scores for a given puzzle
 	public int loadTimes(String pPuzzle, int pX, int pY) {

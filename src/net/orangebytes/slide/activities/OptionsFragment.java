@@ -16,6 +16,7 @@ import android.support.v4.app.Fragment;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -25,6 +26,7 @@ import android.widget.FrameLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
+import android.widget.ImageView;
 import android.widget.TextSwitcher;
 import android.widget.TextView;
 import android.widget.ViewSwitcher;
@@ -181,6 +183,38 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				mSwitcher.setText(p.x+"x"+p.y);
 			}
 		});
+		
+		
+		final ImageView musicPref = (ImageView)root.findViewById(R.id.music_toggle);
+		musicPref.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if(GamePreferences.get(mActivity).getMusicPreference()) {
+					GamePreferences.get(mActivity).setMusicPreference(false);
+					musicPref.setImageResource(R.drawable.music_off);
+				} else {
+					GamePreferences.get(mActivity).setMusicPreference(true);
+					musicPref.setImageResource(R.drawable.music_on);
+				}
+				
+			}});
+		
+		final ImageView soundPref = (ImageView)root.findViewById(R.id.sound_toggle);
+		soundPref.setOnClickListener(new OnClickListener() {
+
+			@Override
+			public void onClick(View arg0) {
+				if(GamePreferences.get(mActivity).getSoundsPreference()) {
+					GamePreferences.get(mActivity).setSoundsPreference(false);
+					soundPref.setImageResource(R.drawable.sound_off);
+				} else {
+					GamePreferences.get(mActivity).setSoundsPreference(true);
+					soundPref.setImageResource(R.drawable.sound_on);
+				}
+				
+			}});
+		
 		
 		updateStats(mActivity.getGameState());
 		

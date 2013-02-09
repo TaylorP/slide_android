@@ -6,15 +6,47 @@
     android:visibility="visible"
     android:paddingLeft="8dp"
     android:paddingRight="8dp"
-    android:paddingTop="20dp"
+    android:paddingTop="10dp"
     android:orientation="vertical"
     android:gravity="center" >
+    
+	<LinearLayout
+	    android:layout_width="match_parent"
+	    android:layout_height="wrap_content"
+	    android:gravity="center"
+	    android:orientation="horizontal">
 
+		<ImageView
+		    android:id="@+id/music_toggle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginRight="10dp"
+		    android:src="@drawable/music_on" />
+
+		<ImageView
+		    android:id="@+id/sound_toggle"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_marginLeft="10dp"
+		    android:src="@drawable/sound_on" />
+
+	</LinearLayout>
+	
+	<ImageView
+	    xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:src="@android:drawable/divider_horizontal_dark"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:scaleType="fitXY"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"
+	    android:paddingBottom="6dp"
+	    android:paddingTop="10dp" />
+	
 	<LinearLayout
 	    android:layout_width="match_parent"
 	    android:layout_height="wrap_content"
 	    android:orientation="vertical"
-	    android:paddingBottom="5dp"
 	    android:gravity="center">
 	    
     	<TextSwitcher
@@ -42,8 +74,8 @@
 	    android:scaleType="fitXY"
 	    android:paddingLeft="5dp"
 	    android:paddingRight="5dp"
-	    android:paddingBottom="10dp"
-	    android:paddingTop="20dp" />
+	    android:paddingBottom="6dp"
+	    android:paddingTop="15dp" />
 	
 	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:layout_width="wrap_content"
@@ -113,28 +145,28 @@
     
 	<ImageView
 	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    android:src="@android:drawable/divider_horizontal_dark"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:scaleType="fitXY"
+	    android:paddingBottom="6dp"
 	    android:paddingLeft="5dp"
 	    android:paddingRight="5dp"
-	    android:paddingBottom="10dp"
-	    android:paddingTop="10dp" />
+	    android:paddingTop="6dp"
+	    android:scaleType="fitXY"
+	    android:src="@android:drawable/divider_horizontal_dark" />
 	    
-	    <ListView
-	        android:id="@+id/option_list"
-	        android:layout_width="match_parent"
-	        android:layout_height="wrap_content"
-			android:divider="@null"
-			android:dividerHeight="0dp"
-			android:overScrollMode="never"
-			android:fadingEdge="none"
-			android:fadingEdgeLength="0dp"
-			android:requiresFadingEdge="none"
-			android:cacheColorHint="#00000000"
-			android:background="#00000000"
-			android:listSelector="@drawable/list_selector" >
-	    </ListView>
+    <ListView
+        android:id="@+id/option_list"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:divider="@null"
+		android:dividerHeight="0dp"
+		android:overScrollMode="never"
+		android:fadingEdge="none"
+		android:fadingEdgeLength="0dp"
+		android:requiresFadingEdge="none"
+		android:cacheColorHint="#00000000"
+		android:background="#00000000"
+		android:listSelector="@drawable/list_selector" >
+    </ListView>
     
 </LinearLayout>
