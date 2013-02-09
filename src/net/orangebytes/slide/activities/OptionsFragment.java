@@ -96,6 +96,10 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 					
 		    	   if(mLastSelected != null) {
 		    		    mLastSelected.getBackground().setAlpha(0);
+		    	   } else if (mLastPosition >= 0) {
+		    		  View v = mOptionsList.getChildAt(mLastPosition);
+		    		  if(v != null)
+		    			  v.getBackground().setAlpha(0);
 		    	   }
 		    	   
 		    	   mLastPosition = position;
@@ -131,28 +135,29 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mSwitcher.setFactory(this);
 		mSwitcher.setInAnimation(in);
 		mSwitcher.setOutAnimation(out);
-		mSwitcher.setText(mActivity.getString(R.string.grid_size));
+		mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + mActivity.getGameState().getX() + "x" + mActivity.getGameState().getY() +")");
 
 		final SeekBar sk = (SeekBar) root.findViewById(R.id.game_size_bar);
 		sk.setMax(DisplayUtils.getDisplaySizes(mActivity).size()-1);
-		
+		sk.setProgress(mActivity.getGameState().getX() + mActivity.getGameState().getY() - 6);
 		sk.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
 			public void onStopTrackingTouch(SeekBar seekBar) {
-
+				
+				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
+				int xSize = p.x;
+				int ySize = p.y;
+				mSwitcher.setText(p.x+"x"+p.y);
+				
 				Animation in = AnimationUtils.loadAnimation(
 						mActivity, R.anim.slow_fade_in);
 				Animation out = AnimationUtils.loadAnimation(
 						mActivity, R.anim.slow_fade_out);
 				mSwitcher.setInAnimation(in);
 				mSwitcher.setOutAnimation(out);
-				mSwitcher.setText(mActivity.getString(R.string.grid_size));
+				mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + p.x + "x" + p.y +")");
 				
-				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
-				int xSize = p.x;
-				int ySize = p.y;
-
 				((MainActivity)mActivity).setPuzzle(null, xSize, ySize);
 				updateStats(mActivity.getGameState());
 			}

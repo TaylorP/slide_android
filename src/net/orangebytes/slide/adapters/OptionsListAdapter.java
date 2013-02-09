@@ -84,8 +84,10 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		
 		if(position == mSelected) {
 			convertView.getBackground().setAlpha(60);
+			viewHolder.mPuzzleThumb.getBackground().setAlpha(255);
 		} else {
 			convertView.getBackground().setAlpha(0);
+			viewHolder.mPuzzleThumb.getBackground().setAlpha(150);
 		}
 
 		return convertView;
