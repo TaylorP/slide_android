@@ -1,6 +1,5 @@
 package net.orangebytes.slide.model;
 
-import android.util.Log;
 import android.view.View;
 import android.view.animation.TranslateAnimation;
 import android.widget.RelativeLayout;
@@ -48,23 +47,19 @@ public class PuzzleTile {
 	}
 	
 	public boolean slide(int pDirection, int amount) {
-		Log.d("Slide", "pDirection: " + pDirection +", amount: " + amount);
 	    if(mEmptyCell)
 	        return false;
 	    
 		float totalX = Math.abs((mView.getLeft()+amount) - mRealLayout.leftMargin);
 		float totalY = Math.abs((mView.getTop()+amount) - mRealLayout.topMargin);
-		Log.d("Slide", "totalX: " + totalX + ", totalY:" + totalY);
 
 		if(totalX >= (mView.getWidth()+6) || totalY >= (mView.getHeight()+6)) {
-			Log.d("Slide", "Too close to edge");
 			swap(pDirection, 0);
 		    
 			return true;
 		}
 		
 	    if(mNeighbours[pDirection] != null) {
-	    	Log.d("Slide", "Sliding neighbour");
 	    	mNeighbours[pDirection].slide(pDirection, amount);
 	    }
 	    

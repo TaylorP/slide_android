@@ -6,7 +6,6 @@ import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.Sounds;
 import android.content.Context;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -240,14 +239,12 @@ public class Puzzle {
 		mMaxDeltaX = 0;
 		mMaxDeltaY = 0;
 		
-		Log.d("TouchDown", "Sliding: " + mSliding + ", X: " + pX + ", " + pY);
+
 	}
 	
 	public void touchMove(float pX, float pY, Context pContext) {
-		Log.d("TouchMove", "X: " + pX + ", " + "Y: " + pY);
 		
 		if(mView != null && !mBlock) {
-			Log.d("TouchMove", "Has view");
 			PuzzleTile p = (PuzzleTile)mView.getTag();
 			
 			if(p.isEmpty())
@@ -255,17 +252,14 @@ public class Puzzle {
 			
 			mSliding = true;
 			
-			Log.d("TouchMove", "Has puzzle tile");
 			float deltaX = (pX - mLastX);
 			float deltaY = (pY - mLastY);
-
-			Log.d("TouchMove", "deltaX: " + deltaX + ", deltaY: " + deltaY);
+			
 			mLastX = pX;
 			mLastY = pY;
 			
 			if(deltaX < 0) {
 				if(p.canSlide(0)){
-					Log.d("TouchMove", "sliding left");
 					mLastDirection = 0;
 					mMaxDeltaX=Math.min(deltaX, mMaxDeltaX);
 					mBlock = p.slide(0, (int) deltaX);
@@ -276,7 +270,6 @@ public class Puzzle {
 				}
 			} else {
 				if(p.canSlide(2)) {
-					Log.d("TouchMove", "sliding right");
 					mLastDirection = 2;
 					mMaxDeltaX=Math.max(deltaX, mMaxDeltaX);
 					mBlock = p.slide(2, (int) deltaX);
@@ -289,7 +282,6 @@ public class Puzzle {
 			
 			if(deltaY < 0) {
 				if(p.canSlide(1)) {
-					Log.d("TouchMove", "sliding up");
 					mLastDirection = 1;
 					mMaxDeltaY=Math.min(deltaY, mMaxDeltaY);
 					mBlock = p.slide(1, (int) deltaY);
@@ -301,7 +293,6 @@ public class Puzzle {
 			}
 			else {
 				if(p.canSlide(3)) {
-					Log.d("TouchMove", "sliding down");
 					mLastDirection = 3;
 					mMaxDeltaY=Math.max(deltaY, mMaxDeltaY);
 					mBlock = p.slide(3, (int) deltaY);
@@ -315,7 +306,6 @@ public class Puzzle {
 	}
 	
 	public boolean touchFinished(float pX, float pY, Context pContext) {
-		Log.d("TouchFinished", "X: " + pX + ", " + "Y: " + pY);
 		if(mBlock) {
 			mMoveCount++;
 			return true;
@@ -362,18 +352,15 @@ public class Puzzle {
 				float halfWay = mView.getWidth() / 3;
 				float deltaX = (mView.getLeft() - p.getRealLayout().leftMargin);
 				float deltaY = (mView.getTop() - p.getRealLayout().topMargin);
-				Log.d("TouchFinished", "Half: " + halfWay + ", deltaX: " + deltaX + ", deltaY: " +deltaY );
 				
 				if(mLastDirection == 0 || mLastDirection == 2) {
 					if(Math.abs(deltaX) >= halfWay ) {
 						p.swap(mLastDirection, 2);
 						mMoveCount++;
-						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 						Sounds.get(pContext).playSound(pContext);
 						return true;
 					} else if(Math.abs(deltaX) >= 10) {
 						p.unslide(mLastDirection);
-						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
 						Sounds.get(pContext).playSound(pContext);
 						return false;
 					}
@@ -381,24 +368,20 @@ public class Puzzle {
 					if(Math.abs(deltaY) >= halfWay) {
 						p.swap(mLastDirection, 2);
 						mMoveCount++;
-						Log.d("TouchFinished", "swapping in direction: " + mLastDirection);
 						Sounds.get(pContext).playSound(pContext);
 						return true;
 					} else if(Math.abs(deltaY) >= 10) { 
 						p.unslide(mLastDirection);
-						Log.d("TouchFinished", "unsliding in direction: " + mLastDirection);
 						Sounds.get(pContext).playSound(pContext);
 						return false;
 					}
 				}
 			}
 			
-			Log.d("TouchFinished", "Searching for a tap");
     		for(int i = 0; i<4; i++) {
-    			if (p.canSlide(i)){
+    			if (p.canSlide(i) && !p.isEmpty()){
     				p.swap(i, 1);
     				mMoveCount++;
-    				Log.d("TouchFinished", "Sliding in direction:" + i);
     				Sounds.get(pContext).playSound(pContext);
     				return true;
     			}
