@@ -99,9 +99,15 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		    	   if(mLastSelected != null) {
 		    		    mLastSelected.getBackground().setAlpha(0);
 		    	   } else if (mLastPosition >= 0) {
-		    		  View v = mOptionsList.getChildAt(mLastPosition);
-		    		  if(v != null)
-		    			  v.getBackground().setAlpha(0);
+		    		   
+		    		   int wantedPosition = mLastPosition;
+		    		   int firstPosition = mOptionsList.getFirstVisiblePosition() - mOptionsList.getHeaderViewsCount(); // This is the same as child #0
+		    		   int wantedChild = wantedPosition - firstPosition;
+		    		   if (!(wantedChild < 0 || wantedChild >= mOptionsList.getChildCount())) {
+			    		  View v = mOptionsList.getChildAt(wantedChild);
+			    		  if(v != null)
+			    			  v.getBackground().setAlpha(0);
+		    		   }		    		   
 		    	   }
 		    	   
 		    	   mLastPosition = position;
