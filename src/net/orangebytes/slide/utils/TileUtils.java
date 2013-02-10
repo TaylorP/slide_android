@@ -17,11 +17,11 @@ public class TileUtils {
 	private static final int sGridPadding = 80;
 	
 	/// Gets the tile size for a given grid
-	public static int getTileSize(Activity pActivity, GameState pState) {
+	public static int getTileSize(Activity pActivity, GameState pState, int pOrientation) {
     	int effectiveWidth 	= DisplayUtils.getDisplayWidth(pActivity) - sGridPadding;
-    	int effectiveHeight = DisplayUtils.getDisplayHeight(pActivity) - sGridPadding;
+    	int effectiveHeight = DisplayUtils.getDisplayHeight(pActivity) - sGridPadding - 30;
 
-    	return Math.min((effectiveWidth / pState.getX()), (effectiveHeight / pState.getY())) - sTilePadding;
+    	return Math.min((effectiveWidth / pState.getX(pOrientation)), (effectiveHeight / pState.getY(pOrientation))) - sTilePadding;
 	}
 	
 	/// Gets the tile padding
@@ -30,12 +30,8 @@ public class TileUtils {
 	}
 	
 	/// Gets the tile scale
-	public static int getTileScale(Bitmap pImage, GameState pState, Resources pResources) {
-    	if(pResources.getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
-    		return pImage.getHeight()/pState.getY();
-    	} else {
-    		return pImage.getWidth()/pState.getX();
-    	}
+	public static int getTileScale(Bitmap pImage, GameState pState, Resources pResources, int pOrientation) {
+    	return pImage.getWidth()/pState.getX(pOrientation);
 	}
 	
 	/// Gets a tile layout parameter for a given size and position

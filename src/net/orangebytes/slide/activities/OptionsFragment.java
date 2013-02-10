@@ -9,6 +9,7 @@ import net.orangebytes.slide.utils.DisplayUtils;
 import net.orangebytes.slide.utils.Sounds;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Typeface;
@@ -140,15 +141,19 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		Animation in = AnimationUtils.loadAnimation(mActivity,android.R.anim.fade_in);
 		Animation out = AnimationUtils.loadAnimation(mActivity,R.anim.fast_fade_out);
 
+		int orientation = getResources().getConfiguration().orientation;
+		
 		mSwitcher = (TextSwitcher) root.findViewById(R.id.grid_size);
 		mSwitcher.setFactory(this);
 		mSwitcher.setInAnimation(in);
 		mSwitcher.setOutAnimation(out);
-		mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + mActivity.getGameState().getX() + "x" + mActivity.getGameState().getY() +")");
+		mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + mActivity.getGameState().getX(orientation) + "x" + mActivity.getGameState().getY(orientation) +")");
 
+		
+		
 		final SeekBar sk = (SeekBar) root.findViewById(R.id.game_size_bar);
 		sk.setMax(DisplayUtils.getDisplaySizes(mActivity).size()-1);
-		sk.setProgress(mActivity.getGameState().getX() + mActivity.getGameState().getY() - 6);
+		sk.setProgress(mActivity.getGameState().getX(orientation) + mActivity.getGameState().getY(orientation) - 6);
 		sk.setOnSeekBarChangeListener(new OnSeekBarChangeListener() {
 
 			@Override
@@ -157,7 +162,14 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
 				int xSize = p.x;
 				int ySize = p.y;
-				mSwitcher.setText(p.x+"x"+p.y);
+				int orientation = getResources().getConfiguration().orientation;
+				String sizeStr;
+				if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					sizeStr = p.y+"x"+p.x;
+				} else {
+					sizeStr = p.x+"x"+p.y;
+				}
+				mSwitcher.setText(sizeStr);
 				
 				Animation in = AnimationUtils.loadAnimation(
 						mActivity, R.anim.slow_fade_in);
@@ -165,7 +177,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 						mActivity, R.anim.slow_fade_out);
 				mSwitcher.setInAnimation(in);
 				mSwitcher.setOutAnimation(out);
-				mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + p.x + "x" + p.y +")");
+				mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + sizeStr +")");
 				
 				((MainActivity)mActivity).setPuzzle(null, xSize, ySize);
 				updateStats(mActivity.getGameState());
@@ -269,8 +281,9 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		}
 		String title = mValues[mLastPosition].getTitle();
 		
-		int x = pGameState.getX();
-		int y = pGameState.getY();
+		int orientation = getResources().getConfiguration().orientation;
+		int x = pGameState.getX(orientation);
+		int y = pGameState.getY(orientation);
 		
 		int moves = GamePreferences.get(mActivity).loadMoves(title, x, y);
 		int times = GamePreferences.get(mActivity).loadTimes(title, x, y);

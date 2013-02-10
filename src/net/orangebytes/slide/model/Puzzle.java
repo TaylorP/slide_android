@@ -124,33 +124,33 @@ public class Puzzle {
 	}
 
 	/// Generates the initial puzzle model links for a given puzzle size
-	public void generateLinks(GameState pState) {
+	public void generateLinks(GameState pState, int pOrientation) {
 		mPuzzleActive = false;
 		
 		mPuzzleTiles = new PuzzleTile[pState.getSize()];
     	int index = 0;
 
-    	for(int i = 0; i < pState.getX(); i++){
-    		for(int j = 0; j< pState.getY(); j++){
+    	for(int i = 0; i < pState.getX(pOrientation); i++){
+    		for(int j = 0; j< pState.getY(pOrientation); j++){
     			mPuzzleTiles[index] = new PuzzleTile();
     			index++;
     		}
     	}
     	
     	index = 0;
-    	for(int i = 0; i < pState.getX(); i++){
-    		for(int j = 0; j< pState.getY(); j++){
+    	for(int i = 0; i < pState.getX(pOrientation); i++){
+    		for(int j = 0; j< pState.getY(pOrientation); j++){
                 if(j > 0){
                 	mPuzzleTiles[index].mNeighbours[1] = mPuzzleTiles[index-1];
                 }
-                if(j< pState.getY()-1){
+                if(j< pState.getY(pOrientation)-1){
                 	mPuzzleTiles[index].mNeighbours[3] = mPuzzleTiles[index+1];
                 }
                 if(i > 0){
-                	mPuzzleTiles[index].mNeighbours[0] = mPuzzleTiles[index-pState.getY()];
+                	mPuzzleTiles[index].mNeighbours[0] = mPuzzleTiles[index-pState.getY(pOrientation)];
                 }
-                if(i< pState.getX()-1){
-                	mPuzzleTiles[index].mNeighbours[2] = mPuzzleTiles[index+pState.getY()];
+                if(i< pState.getX(pOrientation)-1){
+                	mPuzzleTiles[index].mNeighbours[2] = mPuzzleTiles[index+pState.getY(pOrientation)];
                 }
                 index++;
     		}
@@ -158,10 +158,10 @@ public class Puzzle {
 	}
 	
 	/// Links a set of views into the puzzle
-	public void linkPuzzle(GameState pState, ImageView pViews[]) {
+	public void linkPuzzle(GameState pState, ImageView pViews[], int pOrientation) {
     	int index = 0;
-    	for(int i = 0; i < pState.getX(); i++){
-    		for(int j = 0; j< pState.getY(); j++){
+    	for(int i = 0; i < pState.getX(pOrientation); i++){
+    		for(int j = 0; j< pState.getY(pOrientation); j++){
                 pViews[index].setTag(mPuzzleTiles[index]);
                 mPuzzleTiles[index].setView(pViews[index]);
                 
@@ -195,28 +195,28 @@ public class Puzzle {
 	}
 	
 	/// Returns true if the puzzle has been solved
-	public boolean isSolved(GameState pState, Context pContext) {
+	public boolean isSolved(GameState pState, Context pContext, int pOrientation) {
 		if(!isActive() && !isShuffling())
 			return false;
 		
 		int index = 0;
-    	for(int i = 0; i < pState.getX(); i++){
-    		for(int j = 0; j< pState.getY(); j++){
+    	for(int i = 0; i < pState.getX(pOrientation); i++){
+    		for(int j = 0; j< pState.getY(pOrientation); j++){
     			
                 if(j > 0){
                 	if(mPuzzleTiles[index].mNeighbours[1] != mPuzzleTiles[index-1])
                 		return false;
                 }
-                if(j< pState.getY()-1){
+                if(j< pState.getY(pOrientation)-1){
                 	if(mPuzzleTiles[index].mNeighbours[3] != mPuzzleTiles[index+1])
                 		return false;
                 }
                 if(i > 0){
-                	if(mPuzzleTiles[index].mNeighbours[0] != mPuzzleTiles[index-pState.getY()])
+                	if(mPuzzleTiles[index].mNeighbours[0] != mPuzzleTiles[index-pState.getY(pOrientation)])
                 		return false;
                 }
-                if(i< pState.getX()-1){
-                	if(mPuzzleTiles[index].mNeighbours[2] != mPuzzleTiles[index+pState.getY()])
+                if(i< pState.getX(pOrientation)-1){
+                	if(mPuzzleTiles[index].mNeighbours[2] != mPuzzleTiles[index+pState.getY(pOrientation)])
                 		return false;
                 }
                 index++;
@@ -224,7 +224,7 @@ public class Puzzle {
     	}  
     	
     	mPuzzleActive = false;
-    	GamePreferences.get(pContext).saveMoves(mMoveCount, pState.getImageName(), pState.getX(), pState.getY());
+    	GamePreferences.get(pContext).saveMoves(mMoveCount, pState.getImageName(), pState.getX(pOrientation), pState.getY(pOrientation));
     	
     	return true;
 	}

@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.res.Configuration;
 
 /// Singleton preferences class, for reading and writing user preferences
 public final class GamePreferences {
@@ -84,8 +85,8 @@ public final class GamePreferences {
 	
 	/// Stores a GameState instance into the preferences
 	public void storeGameState(GameState pState) {
-		mPrefsEditor.putInt(sGridXKey, pState.getX())
-					.putInt(sGridYKey, pState.getY())
+		mPrefsEditor.putInt(sGridXKey, pState.getX(Configuration.ORIENTATION_PORTRAIT))
+					.putInt(sGridYKey, pState.getY(Configuration.ORIENTATION_PORTRAIT))
 					.putInt(sImageKey, pState.getImage())
 					.putString(sImageNameKey, pState.getImageName());
 		mPrefsEditor.commit();

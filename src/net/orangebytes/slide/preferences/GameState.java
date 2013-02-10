@@ -1,5 +1,7 @@
 package net.orangebytes.slide.preferences;
 
+import android.content.res.Configuration;
+
 /// A utility class for holding game configuration, also a proxy to the preferences
 public class GameState {
 	
@@ -24,12 +26,16 @@ public class GameState {
 	}
 	
 	/// Returns the x size
-	public int getX() {
+	public int getX(int pOrientation) {
+		if(pOrientation == Configuration.ORIENTATION_LANDSCAPE)
+			return mSizeY;
 		return mSizeX;
 	}
 	
 	/// Returns the y size
-	public int getY() {
+	public int getY(int pOrientation) {
+		if(pOrientation == Configuration.ORIENTATION_LANDSCAPE)
+			return mSizeX;
 		return mSizeY;
 	}
 	

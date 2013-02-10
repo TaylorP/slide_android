@@ -62,14 +62,15 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	///Runnable to check completion of the puzzle
 	private final Runnable mCompletionCheck = new Runnable() {
 		public void run() {
-			if (mPuzzle.isSolved(mActivity.getGameState(), mActivity)) {
+			int orientation = getResources().getConfiguration().orientation;
+			if (mPuzzle.isSolved(mActivity.getGameState(), mActivity, orientation)) {
 				mViews[mActivity.getGameState().getSize() - 1].setImageResource(R.drawable.shuffle);
 				toggleView();
 				
 				GamePreferences.get(mActivity).saveTimes(mTime, 
 						mActivity.getGameState().getImageName(), 
-						mActivity.getGameState().getX(), 
-						mActivity.getGameState().getY());
+						mActivity.getGameState().getX(orientation), 
+						mActivity.getGameState().getY(orientation));
 				
 				mActivity.onComplete(mActivity.getGameState());
 				mTime = -1;
@@ -148,8 +149,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
  		  });
     	
     	setPuzzle(mActivity.getGameState().getImageName(),
-    			mActivity.getGameState().getX(), 
-    			mActivity.getGameState().getY());
+    			mActivity.getGameState().getX(getResources().getConfiguration().orientation), 
+    			mActivity.getGameState().getY(getResources().getConfiguration().orientation));
     	
         return root;
     }
@@ -190,6 +191,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
 	/// Sets the puzzle, given an image and/or size
     public void setPuzzle(String pImageName, int pSizeX, int pSizeY) {
     	
+    	int orientation = getResources().getConfiguration().orientation;
+    	
     	mTimeText.setText("0:00");
     	
     	if(mPuzzle.isShuffling()) {
@@ -207,8 +210,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	}
     	
     	if(pSizeX == -1 || pSizeY == -1) {
-    		pSizeX = mActivity.getGameState().getX();
-    		pSizeY = mActivity.getGameState().getY();
+    		pSizeX = mActivity.getGameState().getX(orientation);
+    		pSizeY = mActivity.getGameState().getY(orientation);
     	} else {
     		mActivity.getGameState().setX(pSizeX);
     		mActivity.getGameState().setY(pSizeY);
@@ -218,14 +221,14 @@ public class GameFragment extends Fragment implements OnTouchListener{
     
     	Bitmap image = BitmapFactory.decodeResource(getResources(), imageRes);
     	
-    	int tileSize = TileUtils.getTileSize(mActivity, mActivity.getGameState()); // This is the UI view size
+    	int tileSize = TileUtils.getTileSize(mActivity, mActivity.getGameState(), orientation); // This is the UI view size
     	int tilePadding = TileUtils.getTilePadding();
-    	int tileScale = TileUtils.getTileScale(image, mActivity.getGameState(), getResources()); // This is the actual image size
+    	int tileScale = TileUtils.getTileScale(image, mActivity.getGameState(), getResources(), orientation); // This is the actual image size
     	
-    	int gridWidth = (tileSize + tilePadding)* mActivity.getGameState().getX();
-    	int gridHeight = (tileSize + tilePadding)* mActivity.getGameState().getY();
+    	int gridWidth = (tileSize + tilePadding)* mActivity.getGameState().getX(orientation);
+    	int gridHeight = (tileSize + tilePadding)* mActivity.getGameState().getY(orientation);
     	
-    	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mActivity.getGameState().getX(),tileScale*mActivity.getGameState().getY()));
+    	mPreview.setImageBitmap(Bitmap.createBitmap(image,0,0,tileScale*mActivity.getGameState().getX(orientation),tileScale*mActivity.getGameState().getY(orientation)));
     	LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(gridWidth, gridHeight);
     	mPreview.setLayoutParams(params);
     	
@@ -237,8 +240,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	LayoutInflater viewInflator = (LayoutInflater)mActivity.getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     	
     	int count = 0;
-    	for(int i = 0; i < mActivity.getGameState().getX(); i++){
-    		for(int j = 0; j< mActivity.getGameState().getY(); j++){
+    	for(int i = 0; i < mActivity.getGameState().getX(orientation); i++){
+    		for(int j = 0; j< mActivity.getGameState().getY(orientation); j++){
     	    	int xPos = (tileSize + tilePadding) * i;
     	    	int yPos = (tileSize + tilePadding) * j;
     	    	
@@ -261,8 +264,8 @@ public class GameFragment extends Fragment implements OnTouchListener{
     	    	count++;
     		}
     	}
-    	mPuzzle.generateLinks(mActivity.getGameState());
-    	mPuzzle.linkPuzzle(mActivity.getGameState(), mViews);
+    	mPuzzle.generateLinks(mActivity.getGameState(), orientation);
+    	mPuzzle.linkPuzzle(mActivity.getGameState(), mViews, orientation);
     	
     	if(mFlipper.getDisplayedChild() == 1) {
     		toggleView();
