@@ -6,6 +6,7 @@ import net.orangebytes.slide.model.PuzzleInfo;
 import net.orangebytes.slide.preferences.GamePreferences;
 import net.orangebytes.slide.preferences.GameState;
 import net.orangebytes.slide.utils.DisplayUtils;
+import net.orangebytes.slide.utils.Sounds;
 import net.orangebytes.slide.utils.TimeUtils;
 import android.annotation.SuppressLint;
 import android.graphics.Color;
@@ -199,12 +200,22 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				if(GamePreferences.get(mActivity).getMusicPreference()) {
 					GamePreferences.get(mActivity).setMusicPreference(false);
 					musicPref.setImageResource(R.drawable.music_off);
+					Sounds.get(mActivity).stopMusic(mActivity);
 				} else {
 					GamePreferences.get(mActivity).setMusicPreference(true);
 					musicPref.setImageResource(R.drawable.music_on);
+					Sounds.get(mActivity).startMusic(mActivity);
 				}
 				
 			}});
+		
+		if(!GamePreferences.get(mActivity).getMusicPreference()) {
+			musicPref.setImageResource(R.drawable.music_off);
+			Sounds.get(mActivity).stopMusic(mActivity);
+		} else {
+			musicPref.setImageResource(R.drawable.music_on);
+			Sounds.get(mActivity).startMusic(mActivity);
+		}
 		
 		final ImageView soundPref = (ImageView)root.findViewById(R.id.sound_toggle);
 		soundPref.setOnClickListener(new OnClickListener() {
@@ -220,6 +231,12 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				}
 				
 			}});
+		
+		if(!GamePreferences.get(mActivity).getSoundsPreference()) {
+			soundPref.setImageResource(R.drawable.sound_off);
+		} else {
+			soundPref.setImageResource(R.drawable.sound_on);
+		}
 		
 		
 		updateStats(mActivity.getGameState());

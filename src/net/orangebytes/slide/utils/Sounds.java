@@ -4,17 +4,26 @@ import net.orangebytes.slide.R;
 import net.orangebytes.slide.preferences.GamePreferences;
 import android.content.Context;
 import android.media.AudioManager;
+import android.media.MediaPlayer;
 import android.media.SoundPool;
 import android.media.SoundPool.OnLoadCompleteListener;
+import android.os.AsyncTask;
+import android.util.Log;
 
 public class Sounds {
 	private static Sounds sSounds;
 
+	private MediaPlayer mMusic = null;
 	private SoundPool mSoundPool = null;
+	private boolean mPlaying = false;
 	private int mLoaded = 0;
 	private int[] mSounds;
 
 	private Sounds(Context pContext) {
+		mMusic = MediaPlayer.create(pContext, R.raw.music);
+		mMusic.setLooping(true);
+		mMusic.setVolume(0.5f, 0.5f);
+		
 		mSoundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 0);
 		mSoundPool.setOnLoadCompleteListener(new OnLoadCompleteListener() {
 			@Override
@@ -42,6 +51,20 @@ public class Sounds {
 
 		if (mLoaded >= 3) {
 			mSoundPool.play(mSounds[(int) (Math.random() * 3)], volume, volume,1, 0, 1f);
+		}
+	}
+	
+	public void startMusic(Context pContext) {
+		if(!mPlaying) {
+			mMusic.start();
+			mPlaying = true;
+		}
+	}
+	
+	public void stopMusic(Context pContext) {
+		if(mPlaying) {
+			mMusic.pause();
+			mPlaying = false;
 		}
 	}
 

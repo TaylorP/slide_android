@@ -62,6 +62,16 @@ public class MainActivity extends SlidingFragmentActivity {
 	public void onPause () {
 		super.onPause();
 		GamePreferences.get(this).storeGameState(mGameState);
+		Sounds.get(this).stopMusic(this);
+	}
+	
+	@Override
+	///Called when the activity resumes - used to restart music
+	public void onResume() {
+		super.onResume();
+		if(GamePreferences.get(this).getMusicPreference()) {
+			Sounds.get(this).startMusic(this);
+		}
 	}
 	
 	/// Sets the puzzle based on an image resource and size
