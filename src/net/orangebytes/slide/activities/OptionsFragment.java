@@ -89,7 +89,6 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				new PuzzleInfo("peach", "peach_thumb") };
 
 		mOptionsAdapter = new OptionsListAdapter(mActivity, mValues);
-		
 		mOptionsList.setAdapter(mOptionsAdapter);
 		mOptionsList.setClickable(true);
 		mOptionsList.setOnItemClickListener(new OnItemClickListener() {
@@ -199,7 +198,14 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 			@Override
 			public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 				Point p = DisplayUtils.getDisplaySizes(mActivity).get(seekBar.getProgress());
-				mSwitcher.setText(p.x+"x"+p.y);
+				String sizeStr;
+				int orientation = getResources().getConfiguration().orientation;
+				if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
+					sizeStr = p.y+"x"+p.x;
+				} else {
+					sizeStr = p.x+"x"+p.y;
+				}
+				mSwitcher.setText(sizeStr);
 			}
 		});
 		

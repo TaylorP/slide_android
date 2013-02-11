@@ -2,7 +2,6 @@ package net.orangebytes.slide.utils;
 
 import net.orangebytes.slide.preferences.GameState;
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.widget.RelativeLayout;
@@ -18,6 +17,7 @@ public class TileUtils {
 	
 	/// Gets the tile size for a given grid
 	public static int getTileSize(Activity pActivity, GameState pState, int pOrientation) {
+	
     	int effectiveWidth 	= DisplayUtils.getDisplayWidth(pActivity) - sGridPadding;
     	int effectiveHeight = DisplayUtils.getDisplayHeight(pActivity) - sGridPadding - 30;
 
