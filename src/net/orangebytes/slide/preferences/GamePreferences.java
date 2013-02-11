@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
+import android.util.Log;
 
 /// Singleton preferences class, for reading and writing user preferences
 public final class GamePreferences {
@@ -77,8 +78,8 @@ public final class GamePreferences {
 		GameState state = new GameState(
 				mSharedPrefs.getInt(sGridXKey, 3),
 				mSharedPrefs.getInt(sGridYKey, 3),
-				mSharedPrefs.getInt(sImageKey, R.drawable.beach),
-				mSharedPrefs.getString(sImageNameKey, "beach"));
+				mSharedPrefs.getInt(sImageKey, R.drawable.chess),
+				mSharedPrefs.getString(sImageNameKey, "chess"));
 		
 		return state;
 	}

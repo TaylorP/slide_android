@@ -3,8 +3,12 @@ package net.orangebytes.slide.adapters;
 import java.util.Hashtable;
 
 import net.orangebytes.slide.R;
+import net.orangebytes.slide.activities.MainActivity;
 import net.orangebytes.slide.model.PuzzleInfo;
+import net.orangebytes.slide.preferences.GamePreferences;
+import net.orangebytes.slide.utils.TimeUtils;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -18,7 +22,7 @@ import android.widget.TextView;
 public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 	
 	/// The context that this adapter lives in, passed in by the creating list
-	private final Context mContext;
+	private final MainActivity mContext;
 	
 	/// The array of values the adapter should pull from
 	private final PuzzleInfo[] mValues;
@@ -36,13 +40,19 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		/// The title text field of a view
 		TextView mTitleText;
 		
+		/// The times text
+		TextView mTimesText;
+		
+		/// The moves text
+		TextView mMovesText;
+		
 		/// The puzzle thumbnail image view
 		ImageView mPuzzleThumb;
 	}
 
 	
 	/// Constructor taking a context and data array as parameters
-	public OptionsListAdapter(Context context, PuzzleInfo[] values) {
+	public OptionsListAdapter(MainActivity context, PuzzleInfo[] values) {
 		super(context, R.layout.puzzle_info, values);
 		
 		mContext = context;
@@ -62,6 +72,10 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 
 			viewHolder = new OptionsListViewHolder();
 			viewHolder.mPuzzleThumb = (ImageView) convertView.findViewById(R.id.puzzle_thumb);
+			
+			viewHolder.mTimesText = (TextView)convertView.findViewById(R.id.list_time_text);
+			viewHolder.mTitleText = (TextView)convertView.findViewById(R.id.list_title_text);
+			viewHolder.mMovesText = (TextView)convertView.findViewById(R.id.list_move_text);
 
 			convertView.setTag(viewHolder);
 		} else {
@@ -78,6 +92,16 @@ public class OptionsListAdapter extends ArrayAdapter<PuzzleInfo> {
 		
 		viewHolder.mPuzzleThumb.setImageDrawable(drawable);
 		viewHolder.mPuzzleThumb.setFocusable(false);
+		
+		if(viewHolder.mTitleText != null) {
+			int x = mContext.getGameState().getX(Configuration.ORIENTATION_PORTRAIT);
+			int y = mContext.getGameState().getY(Configuration.ORIENTATION_PORTRAIT);
+			int moves = GamePreferences.get(mContext).loadMoves(mValues[position].getTitle(),x,y); 
+			int times = GamePreferences.get(mContext).loadTimes(mValues[position].getTitle(), x, y);
+			viewHolder.mTitleText.setText(mValues[position].getTitle());
+			viewHolder.mMovesText.setText(moves > 0 ? (moves+"") : "--");
+			viewHolder.mTimesText.setText(TimeUtils.intToMinutes(times));
+		}
 		
 		convertView.setFocusable(false);
 		convertView.setClickable(false);

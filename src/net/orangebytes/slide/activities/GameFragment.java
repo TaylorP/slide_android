@@ -17,6 +17,7 @@ import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -148,9 +149,7 @@ public class GameFragment extends Fragment implements OnTouchListener{
  		   }
  		  });
     	
-    	setPuzzle(mActivity.getGameState().getImageName(),
-    			mActivity.getGameState().getX(getResources().getConfiguration().orientation), 
-    			mActivity.getGameState().getY(getResources().getConfiguration().orientation));
+    	setPuzzle(null,-1,-1);
     	
         return root;
     }

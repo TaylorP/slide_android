@@ -12,14 +12,12 @@ public class TileUtils {
 	/// The tile padding - TODO this should probably be moved into a resource
 	private static final int sTilePadding = 6;
 	
-	/// The side padding - TODO this should probably be moved into a resource
-	private static final int sGridPadding = 80;
 	
 	/// Gets the tile size for a given grid
 	public static int getTileSize(Activity pActivity, GameState pState, int pOrientation) {
 	
-    	int effectiveWidth 	= DisplayUtils.getDisplayWidth(pActivity) - sGridPadding;
-    	int effectiveHeight = DisplayUtils.getDisplayHeight(pActivity) - sGridPadding - 30;
+    	int effectiveWidth 	= (int) (DisplayUtils.getDisplayWidth(pActivity) * 0.9);
+    	int effectiveHeight = (int) (DisplayUtils.getDisplayHeight(pActivity) *0.75);
 
     	return Math.min((effectiveWidth / pState.getX(pOrientation)), (effectiveHeight / pState.getY(pOrientation))) - sTilePadding;
 	}

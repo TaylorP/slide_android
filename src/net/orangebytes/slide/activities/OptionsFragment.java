@@ -117,9 +117,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 			   	   view.getBackground().setAlpha(60);
 
 
-	    		   if(mPuzzleName != null) { 
-	    			   updateStats(mActivity.getGameState());
-	    		   }
+			   	   updateStats(mActivity.getGameState());
 	    		    
 		    	   if (android.os.Build.VERSION.SDK_INT >= 11){
 		    		   mOptionsList.smoothScrollToPositionFromTop(position, 0);
@@ -148,8 +146,6 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		mSwitcher.setOutAnimation(out);
 		mSwitcher.setText(mActivity.getString(R.string.grid_size) + " (" + mActivity.getGameState().getX(orientation) + "x" + mActivity.getGameState().getY(orientation) +")");
 
-		
-		
 		final SeekBar sk = (SeekBar) root.findViewById(R.id.game_size_bar);
 		sk.setMax(DisplayUtils.getDisplaySizes(mActivity).size()-1);
 		sk.setProgress(mActivity.getGameState().getX(orientation) + mActivity.getGameState().getY(orientation) - 6);
@@ -163,6 +159,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 				int ySize = p.y;
 				int orientation = getResources().getConfiguration().orientation;
 				String sizeStr;
+				
 				if(orientation == Configuration.ORIENTATION_LANDSCAPE) {
 					sizeStr = p.y+"x"+p.x;
 				} else {
@@ -276,6 +273,7 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 	}
 	
 	public void updateStats(GameState pGameState) {
+		
 		if(mLastPosition == -1 ) {
 			for(int i = 0; i<mValues.length; i++) {
 				if(mValues[i].getTitle().equals(pGameState.getImageName())) {
@@ -287,16 +285,19 @@ public class OptionsFragment extends Fragment implements ViewSwitcher.ViewFactor
 		}
 		String title = mValues[mLastPosition].getTitle();
 		
-		int orientation = getResources().getConfiguration().orientation;
-		int x = pGameState.getX(orientation);
-		int y = pGameState.getY(orientation);
+		int x = pGameState.getX(Configuration.ORIENTATION_PORTRAIT);
+		int y = pGameState.getY(Configuration.ORIENTATION_PORTRAIT);
 		
 		int moves = GamePreferences.get(mActivity).loadMoves(title, x, y);
 		int times = GamePreferences.get(mActivity).loadTimes(title, x, y);
 		   
-		mPuzzleName.setText(title);
-		mBestTime.setText(TimeUtils.intToMinutes(times));
-		mBestMoves.setText(moves > 0 ? (moves+"") : "-");
+		if(mPuzzleName != null) {
+			mPuzzleName.setText(title);
+			mBestTime.setText(TimeUtils.intToMinutes(times));
+			mBestMoves.setText(moves > 0 ? (moves+"") : "-");
+		}
+   	   	if(getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE)
+   	   		mOptionsAdapter.notifyDataSetChanged();
 	}
 	
 	public void scrollToSelected() {

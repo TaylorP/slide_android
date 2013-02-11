@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" 
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:padding="2dp"
+    android:gravity = "center"
+    android:clickable="true"
+    android:background="#FFFFFFFF">
+    
+	<include
+   		android:id="@+id/puzzle_thumb"
+   		layout="@layout/puzzle_tile"/>
+ 				
+	<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content" >	 
+	    <TableRow
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:padding="1dip" >
+	      	<TextView
+			    android:id="@+id/list_title_text"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+			    android:gravity="left"
+			    android:textColor="#BBBBBB"
+			    android:textAppearance="?android:attr/textAppearanceLarge" />
+	    </TableRow>
+	    <TableRow
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:padding="0dip" >
+	 
+			<TextView
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:paddingLeft="0dp"
+			    android:text="@string/best_time"
+			    android:textColor="#888888"
+			    android:textAppearance="?android:attr/textAppearanceSmall" />
+			<TextView
+			    android:id="@+id/list_time_text"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:paddingLeft="4dp"
+			    android:paddingRight="4dp"
+				android:gravity="right"
+				android:layout_weight="1.0"
+				android:textColor="#999999"
+			    android:textAppearance="?android:attr/textAppearanceMedium" />
+	    </TableRow>
+	    <TableRow
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:padding="0dip" >
+	 
+			<TextView
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:paddingLeft="0dp"
+			    android:text="@string/best_move"
+			    android:textColor="#888888"
+			    android:textAppearance="?android:attr/textAppearanceSmall" />
+			<TextView
+			    android:id="@+id/list_move_text"
+			    android:layout_width="wrap_content"
+			    android:layout_height="wrap_content"
+			    android:paddingLeft="4dp"
+			    android:paddingRight="4dp"
+				android:gravity="right"
+				android:layout_weight="1.0"
+				android:textColor="#999999"
+			    android:textAppearance="?android:attr/textAppearanceMedium" />
+	    </TableRow>
+    </TableLayout>
+</LinearLayout>
