@@ -164,8 +164,7 @@
 		android:fadingEdge="none"
 		android:fadingEdgeLength="0dp"
 		android:requiresFadingEdge="none"
-		android:cacheColorHint="#00000000"
-		android:background="#00000000"
+		android:cacheColorHint="#333333"
 		android:listSelector="@drawable/list_selector" >
     </ListView>
     

@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
-import android.util.Log;
 
 /// Singleton preferences class, for reading and writing user preferences
 public final class GamePreferences {
