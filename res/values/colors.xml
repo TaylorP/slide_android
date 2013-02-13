@@ -1,4 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="faint_white">#22ffffff</color>
+    <color name="faint_black">#22000000</color>
+    <color name="faint_grey">#22666666</color>
+    <color name="clear">#0000</color>
 </resources>
